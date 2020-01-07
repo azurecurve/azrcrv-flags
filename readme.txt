@@ -31,6 +31,9 @@ To install the Flags plugin:
 
 == Changelog ==
 Changes and feature additions for the Flags plugin:
+= 1.0.1 =
+* Update azurecurve menu for easier maintenance.
+* Move require of azurecurve menu below security check.
 = 1.0.0 =
 * First version for ClassicPress forked from azurecurve Flags WordPress Plugin.
 
