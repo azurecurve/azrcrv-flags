@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags
@@ -157,16 +157,25 @@ function azrcrv_f_settings(){
 		<?php esc_html_e('Available flags are:', 'icons');
 			
 			$dir = plugin_dir_path(__FILE__).'/images';
+			$flags = array();
 			if (is_dir($dir)){
 				if ($directory = opendir($dir)){
 					while (($file = readdir($directory)) !== false){
-						if ($file != '.' and $file != '..' and $file != 'Thumbs.db'){
+						if ($file != '.' and $file != '..' and $file != 'Thumbs.db' and $file != 'index.php'){
 							$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
-							echo "<div style='width: 180px; display: inline-block;'><img src='";
-							echo plugin_dir_url(__FILE__)."images/".esc_html($filewithoutext).".png;' alt='".esc_html($filewithoutext)."' />&nbsp;<em>".esc_html($filewithoutext)."</em></div>";
+							$flags[] = $filewithoutext;
 						}
 					}
 					closedir($directory);
+				}
+				asort($flags);
+				
+				if ($directory = opendir($dir)){
+					foreach ($flags as $flag){	
+						$country_name = azrcrv_f_get_country_name($flag);
+						echo "<div style='width: 200px; display: inline-block;'><img src='";
+						echo plugin_dir_url(__FILE__)."images/".esc_html($flag).".png' alt='".esc_html($country_name)."' />&nbsp;<em>".esc_html($country_name)."</em></div>";
+					}
 				}
 			}
 			?>
@@ -199,6 +208,283 @@ function azrcrv_f_settings(){
 }
 
 /**
+ * Get country name.
+ *
+ * @since 1.0.0
+ *
+ */
+function azrcrv_f_get_country_name($country_code){
+
+$countries = array(
+				'AW' => 'Aruba',
+				'AG' => 'Antigua and Barbuda',
+				'AE' => 'United Arab Emirates',
+				'AF' => 'Afghanistan',
+				'DZ' => 'Algeria',
+				'AZ' => 'Azerbaijan',
+				'AL' => 'Albania',
+				'AM' => 'Armenia',
+				'AD' => 'Andorra',
+				'AO' => 'Angola',
+				'AS' => 'American Samoa',
+				'AR' => 'Argentina',
+				'AU' => 'Australia',
+				'AT' => 'Austria',
+				'AI' => 'Anguilla',
+				'AX' => 'Aland Islands',
+				'AQ' => 'Antarctica',
+				'BH' => 'Bahrain',
+				'BB' => 'Barbados',
+				'BW' => 'Botswana',
+				'BM' => 'Bermuda',
+				'BE' => 'Belgium',
+				'BS' => 'Bahamas, The',
+				'BD' => 'Bangladesh',
+				'BZ' => 'Belize',
+				'BA' => 'Bosnia and Herzegovina',
+				'BO' => 'Bolivia Plurinational State of',
+				'BL' => 'Saint Barthelemy',
+				'MM' => 'Myanmar',
+				'BJ' => 'Benin',
+				'BY' => 'Belarus',
+				'SB' => 'Solomon Islands',
+				'BR' => 'Brazil',
+				'BT' => 'Bhutan',
+				'BG' => 'Bulgaria',
+				'BV' => 'Bouvet Island',
+				'BN' => 'Brunei',
+				'BI' => 'Burundi',
+				'CA' => 'Canada',
+				'KH' => 'Cambodia',
+				'TD' => 'Chad',
+				'LK' => 'Sri Lanka',
+				'CG' => 'Congo, Republic of the',
+				'CD' => 'Congo Democratic Republic of the',
+				'CN' => 'China',
+				'CL' => 'Chile',
+				'KY' => 'Cayman Islands',
+				'CC' => 'Cocos Keeling Islands',
+				'CM' => 'Cameroon',
+				'KM' => 'Comoros',
+				'CO' => 'Colombia',
+				'MP' => 'Northern Mariana Islands',
+				'CR' => 'Costa Rica',
+				'CF' => 'Central African Republic',
+				'CU' => 'Cuba',
+				'CV' => 'Cabo Verde',
+				'CK' => 'Cook Islands',
+				'CY' => 'Cyprus',
+				'DK' => 'Denmark',
+				'DJ' => 'Djibouti',
+				'DM' => 'Dominica',
+				'DO' => 'Dominican Republic',
+				'EC' => 'Ecuador',
+				'EG' => 'Egypt',
+				'IE' => 'Ireland',
+				'GQ' => 'Equatorial Guinea',
+				'EE' => 'Estonia',
+				'ER' => 'Eritrea',
+				'SV' => 'El Salvador',
+				'ET' => 'Ethiopia',
+				'CZ' => 'Czechia',
+				'GF' => 'French Guiana',
+				'FI' => 'Finland',
+				'FJ' => 'Fiji',
+				'FK' => 'Falkland Islands Islas Malvinas',
+				'FM' => 'Micronesia Federated States of',
+				'FO' => 'Faroe Islands',
+				'PF' => 'French Polynesia',
+				'FR' => 'France',
+				'TF' => 'French Southern and Antarctic Lands',
+				'GM' => 'Gambia, The',
+				'GA' => 'Gabon',
+				'GE' => 'Georgia',
+				'GH' => 'Ghana',
+				'GI' => 'Gibraltar',
+				'GD' => 'Grenada',
+				'GG' => 'Guernsey',
+				'GL' => 'Greenland',
+				'DE' => 'Germany',
+				'GP' => 'Guadeloupe',
+				'GU' => 'Guam',
+				'GR' => 'Greece',
+				'GT' => 'Guatemala',
+				'GN' => 'Guinea',
+				'GY' => 'Guyana',
+				'HT' => 'Haiti',
+				'HK' => 'Hong Kong',
+				'HM' => 'Heard Island and McDonald Islands',
+				'HN' => 'Honduras',
+				'HR' => 'Croatia',
+				'HU' => 'Hungary',
+				'IS' => 'Iceland',
+				'ID' => 'Indonesia',
+				'IM' => 'Isle of Man',
+				'IN' => 'India',
+				'IO' => 'British Indian Ocean Territory',
+				'IR' => 'Iran Islamic Republic of',
+				'IL' => 'Israel',
+				'IT' => 'Italy',
+				'CI' => 'Cote d\'Ivoire',
+				'IQ' => 'Iraq',
+				'JP' => 'Japan',
+				'JE' => 'Jersey',
+				'JM' => 'Jamaica',
+				'SJ' => 'Jan Mayen',
+				'JO' => 'Jordan',
+				'KE' => 'Kenya',
+				'KG' => 'Kyrgyzstan',
+				'KP' => 'Korea Democratic People\'s Republic of',
+				'KI' => 'Kiribati',
+				'KR' => 'Korea Republic of',
+				'CX' => 'Christmas Island',
+				'KW' => 'Kuwait',
+				'XK' => 'Kosovo',
+				'KZ' => 'Kazakhstan',
+				'LA' => 'Laos',
+				'LB' => 'Lebanon',
+				'LV' => 'Latvia',
+				'LT' => 'Lithuania',
+				'LR' => 'Liberia',
+				'SK' => 'Slovakia',
+				'UM' => 'United States Minor Outlying Islands',
+				'LI' => 'Liechtenstein',
+				'LS' => 'Lesotho',
+				'LU' => 'Luxembourg',
+				'LY' => 'Libya',
+				'MG' => 'Madagascar',
+				'MQ' => 'Martinique',
+				'MO' => 'Macau',
+				'MD' => 'Moldova Republic of',
+				'YT' => 'Mayotte',
+				'MN' => 'Mongolia',
+				'MS' => 'Montserrat',
+				'MW' => 'Malawi',
+				'ME' => 'Montenegro',
+				'MK' => 'North Macedonia',
+				'ML' => 'Mali',
+				'MC' => 'Monaco',
+				'MA' => 'Morocco',
+				'MU' => 'Mauritius',
+				'MR' => 'Mauritania',
+				'MT' => 'Malta',
+				'OM' => 'Oman',
+				'MV' => 'Maldives',
+				'MX' => 'Mexico',
+				'MY' => 'Malaysia',
+				'MZ' => 'Mozambique',
+				'NC' => 'New Caledonia',
+				'NU' => 'Niue',
+				'NF' => 'Norfolk Island',
+				'NE' => 'Niger',
+				'VU' => 'Vanuatu',
+				'NG' => 'Nigeria',
+				'NL' => 'Netherlands',
+				'NO' => 'Norway',
+				'NP' => 'Nepal',
+				'NR' => 'Nauru',
+				'SR' => 'Suriname',
+				'BQ' => 'Bonaire, Sint Eustatius and Saba',
+				'NI' => 'Nicaragua',
+				'NZ' => 'New Zealand',
+				'PY' => 'Paraguay',
+				'PN' => 'Pitcairn Islands',
+				'PE' => 'Peru',
+				'PK' => 'Pakistan',
+				'PL' => 'Poland',
+				'PA' => 'Panama',
+				'PT' => 'Portugal',
+				'PG' => 'Papua New Guinea',
+				'PW' => 'Palau',
+				'GW' => 'Guinea-Bissau',
+				'QA' => 'Qatar',
+				'RE' => 'Reunion',
+				'RS' => 'Serbia',
+				'MH' => 'Marshall Islands',
+				'MF' => 'Saint Martin',
+				'RO' => 'Romania',
+				'PH' => 'Philippines',
+				'PR' => 'Puerto Rico',
+				'RU' => 'Russia',
+				'RW' => 'Rwanda',
+				'SA' => 'Saudi Arabia',
+				'PM' => 'Saint Pierre and Miquelon',
+				'KN' => 'Saint Kitts and Nevis',
+				'SC' => 'Seychelles',
+				'ZA' => 'South Africa',
+				'SN' => 'Senegal',
+				'SH' => 'Saint Helena',
+				'SI' => 'Slovenia',
+				'SL' => 'Sierra Leone',
+				'SM' => 'San Marino',
+				'SG' => 'Singapore',
+				'SO' => 'Somalia',
+				'ES' => 'Spain',
+				'SS' => 'South Sudan',
+				'LC' => 'Saint Lucia',
+				'SD' => 'Sudan',
+				'SJ' => 'Svalbard',
+				'SE' => 'Sweden',
+				'GS' => 'South Georgia and the South Sandwich Islands',
+				'SX' => 'Sint Maarten',
+				'SY' => 'Syrian Arab Republic',
+				'CH' => 'Switzerland',
+				'TT' => 'Trinidad and Tobago',
+				'TH' => 'Thailand',
+				'TJ' => 'Tajikistan',
+				'TC' => 'Turks and Caicos Islands',
+				'TK' => 'Tokelau',
+				'TO' => 'Tonga',
+				'TG' => 'Togo',
+				'ST' => 'Sao Tome and Principe',
+				'TN' => 'Tunisia',
+				'TL' => 'Timor-Leste',
+				'TR' => 'Turkey',
+				'TV' => 'Tuvalu',
+				'TW' => 'Taiwan',
+				'TM' => 'Turkmenistan',
+				'TZ' => 'Tanzania, United Republic of',
+				'CW' => 'Curacao',
+				'UG' => 'Uganda',
+				'GB' => 'United Kingdom of Great Britain and Northern Ireland',
+				'UA' => 'Ukraine',
+				'US' => 'United States of America',
+				'BF' => 'Burkina Faso',
+				'UY' => 'Uruguay',
+				'UZ' => 'Uzbekistan',
+				'VC' => 'Saint Vincent and the Grenadines',
+				'VE' => 'Venezuela Bolivarian Republic of',
+				'VG' => 'Virgin Islands British',
+				'VN' => 'Vietnam',
+				'VI' => 'Virgin Islands U.S.',
+				'VA' => 'Holy See',
+				'NA' => 'Namibia',
+				'PS' => 'Palestine, State of',
+				'WF' => 'Wallis and Futuna',
+				'EH' => 'Western Sahara',
+				'WS' => 'Samoa',
+				'SZ' => 'Eswatini',
+				'CS' => 'Serbia and Montenegro',
+				'YE' => 'Yemen',
+				'ZM' => 'Zambia',
+				'ZW' => 'Zimbabwe',
+				'ENGLAND' => 'England',
+				'WALES' => 'Wales',
+				'SCOTLAND' => 'Scotland',
+				'NORTHERNIRELAND' => 'Northern Ireland',
+				'NORTHUMBERLAND' => 'Northumberland',
+			);
+			
+	$country_name = $countries[strtoupper($country_code)];
+	
+	if (strlen($country_name) == 0){
+		$country_name = $country_code;
+	}
+	
+	return $country_name;
+}
+
+/**
  * Check if function active (included due to standard function failing due to order of load).
  *
  * @since 1.0.0
@@ -223,7 +509,8 @@ function azrcrv_f_flag($atts, $content = null)
 		$flag = trim (trim (trim (trim (trim ($attribs , '=') , '"') , "'") , '&#8217;') , "&#8221;");
 	}
 	$flag = esc_html($flag);
-	return "<img class='azrcrv-f' src='".plugin_dir_url(__FILE__)."images/".esc_html($flag).".png' alt= '".esc_html($flag)."' />";
+	$country_name = azrcrv_f_get_country_name($flag);
+	return "<img class='azrcrv-f' src='".plugin_dir_url(__FILE__)."images/".esc_html($flag).".png' alt= '".esc_html($country_name)."' />";
 }
 
 ?>

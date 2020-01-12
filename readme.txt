@@ -31,6 +31,13 @@ To install the Flags plugin:
 
 == Changelog ==
 Changes and feature additions for the Flags plugin:
+= 1.1.0 =
+* Exclude index.php from image listing on admin page.
+* Fix issue with flags not displaying correctly on admin page.
+* Replace Isle of Mann flag with working one.
+* Amend sort order of flags to alphabetical order on admin page.
+* Add name of flags on admin page.
+* Change alt parameter of flag output to display country name.
 = 1.0.1 =
 * Update azurecurve menu for easier maintenance.
 * Move require of azurecurve menu below security check.
