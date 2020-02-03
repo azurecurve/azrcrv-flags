@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags
@@ -57,7 +57,7 @@ add_shortcode('FLAG', 'azrcrv_f_flag');
  */
 function azrcrv_f_load_languages() {
     $plugin_rel_path = basename(dirname(__FILE__)).'/languages';
-    load_plugin_textdomain('azrcrv-f', false, $plugin_rel_path);
+    load_plugin_textdomain('flags', false, $plugin_rel_path);
 }
 
 /**
