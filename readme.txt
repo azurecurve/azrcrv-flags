@@ -74,7 +74,7 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
  * Add name of flags on admin page.
  * Change alt parameter of flag output to display country name.
 
-### [Version 1.0.1(https://github.com/azurecurve/azrcrv-flags/tree/v1.0.1)
+### [Version 1.0.1](https://github.com/azurecurve/azrcrv-flags/tree/v1.0.1)
  * Update azurecurve menu for easier maintenance.
  * Move require of azurecurve menu below security check.
 
