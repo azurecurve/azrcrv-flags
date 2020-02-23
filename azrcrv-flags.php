@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.2.1
+ * Version: 1.3.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags
@@ -190,7 +190,7 @@ function azrcrv_f_settings(){
 					foreach ($flags as $flag){	
 						$country_name = azrcrv_f_get_country_name($flag);
 						echo "<div style='width: 200px; display: inline-block;'><img src='";
-						echo plugin_dir_url(__FILE__)."images/".esc_html($flag).".png' alt='".esc_html($country_name)."' />&nbsp;<em>".esc_html($country_name)."</em></div>";
+						echo plugin_dir_url(__FILE__)."images/".esc_html($flag).".png' alt='".esc_html($country_name)."' />&nbsp;<em>".esc_html($country_name)." (".esc_html($flag).")</em></div>";
 					}
 				}
 			}
@@ -489,6 +489,9 @@ $countries = array(
 				'SCOTLAND' => 'Scotland',
 				'NORTHERNIRELAND' => 'Northern Ireland',
 				'NORTHUMBERLAND' => 'Northumberland',
+				'CURACAO' => 'Curaçao',
+				'ULSTER' => 'Ulster Banner',
+				'EUROPEANUNION' => 'European Union',
 			);
 			
 	$country_name = $countries[strtoupper($country_code)];
