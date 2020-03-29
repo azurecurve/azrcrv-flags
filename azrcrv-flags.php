@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags
@@ -122,7 +122,7 @@ function azrcrv_f_add_plugin_action_link($links, $file){
 	}
 
 	if ($file == $this_plugin){
-		$settings_link = '<a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=azrcrv-f">'.esc_html__('Settings' ,'flags').'</a>';
+		$settings_link = '<a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=azrcrv-f"><img src="'.plugins_url('/pluginmenu/images/Favicon-16x16.png', __FILE__).'" style="padding-top: 2px; margin-right: -5px; height: 16px; width: 16px;" alt="azurecurve" />'.esc_html__('Settings' ,'flags').'</a>';
 		array_unshift($links, $settings_link);
 	}
 
