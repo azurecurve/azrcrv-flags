@@ -3,10 +3,10 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
- * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags
+ * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
  * Text Domain: flags
  * Domain Path: /languages
  * ------------------------------------------------------------------------------
