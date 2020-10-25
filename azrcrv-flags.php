@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.3.4
+ * Version: 1.4.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -44,6 +44,8 @@ add_action('plugins_loaded', 'azrcrv_f_load_languages');
 
 // add filters
 add_filter('plugin_action_links', 'azrcrv_f_add_plugin_action_link', 10, 2);
+add_filter('codepotent_update_manager_image_path', 'azrcrv_f_custom_image_path');
+add_filter('codepotent_update_manager_image_url', 'azrcrv_f_custom_image_url');
 
 // add shortcodes
 add_shortcode('flag', 'azrcrv_f_flag');
@@ -144,6 +146,32 @@ function azrcrv_f_create_admin_menu(){
 						,'manage_options'
 						,'azrcrv-f'
 						,'azrcrv_f_settings');
+}
+
+/**
+ * Custom plugin image path.
+ *
+ * @since 1.4.0
+ *
+ */
+function azrcrv_f_custom_image_path($path){
+    if (strpos($path, 'azrcrv-flags') !== false){
+        $path = plugin_dir_path(__FILE__).'assets/pluginimages';
+    }
+    return $path;
+}
+
+/**
+ * Custom plugin image url.
+ *
+ * @since 1.4.0
+ *
+ */
+function azrcrv_f_custom_image_url($url){
+    if (strpos($url, 'azrcrv-flags') !== false){
+        $url = plugin_dir_url(__FILE__).'assets/pluginimages';
+    }
+    return $url;
 }
 
 /**
@@ -389,6 +417,7 @@ $countries = array(
 				'MX' => 'Mexico',
 				'MY' => 'Malaysia',
 				'MZ' => 'Mozambique',
+				'AN' => 'Netherlands Antilles',
 				'NC' => 'New Caledonia',
 				'NU' => 'Niue',
 				'NF' => 'Norfolk Island',
@@ -473,7 +502,7 @@ $countries = array(
 				'VG' => 'Virgin Islands British',
 				'VN' => 'Vietnam',
 				'VI' => 'Virgin Islands U.S.',
-				'VA' => 'Holy See',
+				'VA' => 'Vatican City',
 				'NA' => 'Namibia',
 				'PS' => 'Palestine, State of',
 				'WF' => 'Wallis and Futuna',
@@ -491,7 +520,10 @@ $countries = array(
 				'NORTHUMBERLAND' => 'Northumberland',
 				'CURACAO' => 'Curaçao',
 				'ULSTER' => 'Ulster Banner',
+				'ULSTERBANNER' => 'Ulster Banner',
 				'EUROPEANUNION' => 'European Union',
+				'CATALONIA' => 'Catalonia',
+				'NONE' => 'No flag',
 			);
 			
 	$country_name = $countries[strtoupper($country_code)];
