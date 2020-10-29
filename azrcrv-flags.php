@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -38,12 +38,11 @@ require_once(dirname(__FILE__).'/libraries/updateclient/UpdateClient.class.php')
 // add actions
 add_action('wp_enqueue_scripts', 'azrcrv_f_load_css');
 add_action('admin_menu', 'azrcrv_f_create_admin_menu');
-add_action('admin_enqueue_scripts', 'azrcrv_f_load_css');
-//add_action('the_posts', 'azrcrv_f_check_for_shortcode');
 add_action('plugins_loaded', 'azrcrv_f_load_languages');
 
 // add filters
 add_filter('plugin_action_links', 'azrcrv_f_add_plugin_action_link', 10, 2);
+add_filter('the_posts', 'azrcrv_f_check_for_shortcode', 10, 2);
 add_filter('codepotent_update_manager_image_path', 'azrcrv_f_custom_image_path');
 add_filter('codepotent_update_manager_image_url', 'azrcrv_f_custom_image_url');
 
@@ -124,7 +123,7 @@ function azrcrv_f_add_plugin_action_link($links, $file){
 	}
 
 	if ($file == $this_plugin){
-		$settings_link = '<a href="'.get_bloginfo('wpurl').'/wp-admin/admin.php?page=azrcrv-f"><img src="'.plugins_url('/pluginmenu/images/Favicon-16x16.png', __FILE__).'" style="padding-top: 2px; margin-right: -5px; height: 16px; width: 16px;" alt="azurecurve" />'.esc_html__('Settings' ,'flags').'</a>';
+		$settings_link = '<a href="'.admin_url('admin.php?page=azrcrv-f').'"><img src="'.plugins_url('/pluginmenu/images/Favicon-16x16.png', __FILE__).'" style="padding-top: 2px; margin-right: -5px; height: 16px; width: 16px;" alt="azurecurve" />'.esc_html__('Settings' ,'flags').'</a>';
 		array_unshift($links, $settings_link);
 	}
 
