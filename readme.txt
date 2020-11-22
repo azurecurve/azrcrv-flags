@@ -1,12 +1,12 @@
 === Flags ===
 
-Description:	Allows a 16x16 flag to be displayed in a post or page using a shortcode.
-Version:		1.5.0
+Description:	Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
+Version:		1.6.0
 Tags:			flags, posts, pages
 Author:			azurecurve
 Author URI:		https://development.azurecurve.co.uk/
 Plugin URI:		https://development.azurecurve.co.uk/classicpress-plugins/flags/
-Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.5.0/azrcrv-flags.zip
+Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.6.0/azrcrv-flags.zip
 Donate link:	https://development.azurecurve.co.uk/support-development/
 Requires PHP:	5.6
 Requires:		1.0.0
@@ -16,19 +16,17 @@ Domain Path:	/languages
 License: 		GPLv2 or later
 License URI: 	http://www.gnu.org/licenses/gpl-2.0.html
 
-Allows a 16x16 flag to be displayed in a post or page using a shortcode.
+Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
 
 == Description ==
 
 # Description
 
-Allows a 16x16 flag to be displayed in a post of page using a &#91;flag&#93; shortcode.
+Flags allows a scalable SVG flag to be displayed in a post or page using the **[flag]** shortcode
 
-Format of shortcode is &#91;flag=gb&#93; to display the flag of the United Kingdom of Great Britain and Northern Ireland; 247 flags are included.
+The shortcode usage is **[flag id="gb" width="20px" border="1px solid black"]** where the **id** is the country code shown below; width and border are optional paramaters and can be defaulted from the settings. Shortcode usage of **[flag="gb"]** where default parameters are to be used is also supported.
 
-Defintion of flags can be found at [Wikipedia page ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) the admin settings page lists all flags.
-
-Adding any png file to the plugins /images folder will make them available from the shortcode; this allows the replacement of the included flags with alternatives if required.
+Defintion of flags can be found at [https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2](Wikipedia page ISO 3166-1 alpha-2) (although some additional flags have been included).
 
 [Shortcodes In Comments](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-comments/) can be used to allow flags in comments and [Shortcodes In Widgets](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-widgets/) can allow them in widgets.
 
@@ -48,7 +46,7 @@ This plugin is multisite compatible.
 # Frequently Asked Questions
 
 ### Can I translate this plugin?
-Yes, the .pot fie is in the plugins languages folder and can also be downloaded from the plugin page on https://development.azurecurve.co.uk; if you do translate this plugin, please sent the .po and .mo files to translations@azurecurve.co.uk for inclusion in the next version (full credit will be given).
+Yes, the .pot fie is in the plugins languages folder and can also be downloaded from the plugin page on https://development.azurecurve.co.uk/; if you do translate this plugin, please sent the .po and .mo files to translations@azurecurve.co.uk for inclusion in the next version (full credit will be given).
 
 ### Is this plugin compatible with both WordPress and ClassicPress?
 This plugin is developed for ClassicPress, but will likely work on WordPress.
@@ -56,6 +54,14 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
 == Changelog ==
 
 # Changelog
+
+### [Version 1.6.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.6.0)
+ * Update plugin to use svg images rather than png ones.
+ * Replace png flags with public domain svg images.
+ * Add option to set default image width and border attributes.
+ * Update flag shortcode to accept id, width and border parameters (backward compatibility has been maintained).
+ * Add flags for Italian regions and automonomous regions.
+ * Fix bug in azurecurve menu.
 
 ### [Version 1.5.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.5.0)
  * Fix plugin action link to use admin_url() function.

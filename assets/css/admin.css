@@ -1,0 +1,9 @@
+.azrcrv_f_tabs{
+	padding:15px !important;
+}
+.azrcrv_f_tabs.invisible{
+	display:none;
+}
+.azrcrv_f_horiz{
+	margin:0 0 0 10px;
+}
