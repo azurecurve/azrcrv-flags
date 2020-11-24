@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.6.0
+ * Version: 1.7.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -28,6 +28,8 @@ add_action('admin_init', 'azrcrv_create_plugin_menu_f');
 
 // include update client
 require_once(dirname(__FILE__).'/libraries/updateclient/UpdateClient.class.php');
+// include svg-sanitizer
+require_once(dirname(__FILE__).'/libraries/svg-sanitizer/autoload.php');
 
 /**
  * Setup actions, filters and shortcodes.
@@ -107,10 +109,14 @@ function azrcrv_f_check_for_shortcode($posts){
  *
  */
 function azrcrv_f_get_option($option_name){
+	
+	$upload_dir = wp_upload_dir();
  
 	$defaults = array(
 						'width' => '16',
 						'border' => '',
+						'folder' => trailingslashit($upload_dir['basedir']).'flags/',
+						'url' => trailingslashit($upload_dir['baseurl']).'flags/',
 					);
 
 	$options = get_option($option_name, $defaults);
@@ -231,19 +237,15 @@ function azrcrv_f_settings(){
 	
 		echo '<h1>'.esc_html(get_admin_page_title()).'</h1>';
 		
-		if(isset($_GET['settings-updated'])){ ?>
-			<div class="notice notice-success is-dismissible">
-				<p><strong><?php esc_html_e('Settings have been saved.', 'flags'); ?></strong></p>
-			</div>
-		<?php }
-		
-		echo '<form method="post" action="admin-post.php">';
-		echo '<input type="hidden" name="action" value="azrcrv_f_save_options" />';
-		echo '<input name="page_options" type="hidden" value="width,border" />';
-		
-		wp_nonce_field('azrcrv-f', 'azrcrv-f-nonce');
-		
-		echo '<input type="hidden" name="azrcrv_f_data_update" value="yes" />';
+		if(isset($_GET['settings-updated'])){
+			echo '<div class="notice notice-success is-dismissible"><p><strong>'.esc_html__('Settings have been saved.', 'flags').'</strong></p></div>';
+		}else if(isset($_GET['upload-successful'])){
+			echo '<div class="notice notice-success is-dismissible"><p><strong>'.esc_html__('Upload successful.', 'flags').'</strong></p></div>';
+		}else if (isset($_GET['invalid-upload-request'])){
+			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Invaluid upload request; upload failed.', 'flags').'</strong></p></div>';
+		}else if (isset($_GET['settings-updated'])){
+			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Upload failed.', 'flags').'</strong></p></div>';
+		}
 		
 		if (isset($saved_options['width'])){
 			$showsettings = false;
@@ -262,35 +264,58 @@ function azrcrv_f_settings(){
 		<h2 class="nav-tab-wrapper nav-tab-wrapper-azrcrv-f">
 			<a class="nav-tab <?php if ($showsettings == true){ echo 'nav-tab-active'; } ?>" data-item=".tabs-1" href="#tabs-1"><?php _e('Default Settings', 'flags') ?></a>
 			<a class="nav-tab <?php if ($showsettings == false){ echo 'nav-tab-active'; } ?>" data-item=".tabs-2" href="#tabs-2"><?php _e('Available Flags', 'flags') ?></a>
+			<?php
+			if (isset($saved_options)){
+				echo '<a class="nav-tab" data-item=".tabs-3" href="#tabs-3">'.__('Upload Flag', 'flags').'</a>';
+			}
+			?>
 		</h2>
 
 		<div>
 			<div class="azrcrv_f_tabs <?php if ($showsettings == false){ echo 'invisible'; } ?> tabs-1">
 				<p class="azrcrv_f_horiz">
-				<table class="form-table">
-				
-					<tr><th scope="row"><?php esc_html_e('Default width?', 'flags'); ?></th><td>
-						<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default width?', 'flags'); ?></span></legend>
-							<label for="width"><input type="number" name="width" class="small-text" value="<?php echo $options['width']; ?>" />px</label>
-						</fieldset>
-					</td></tr>
-				
-					<tr><th scope="row"><?php esc_html_e('Default border?', 'flags'); ?></th><td>
-						<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default border?', 'flags'); ?></span></legend>
-							<label for="border"><input type="text" name="border" class="regular-text" value="<?php echo $options['border']; ?>"/></label>
-							<p class="description"><?php esc_html_e('Setting a default border is supported, but not recommended; borders are work better if applied only to those flags with a background matching your site background.', 'flags'); ?></p>
-						</fieldset>
-					</td></tr>
-					
-				</table>
+					<form method="post" action="admin-post.php">
+						<input type="hidden" name="action" value="azrcrv_f_save_options" />
+						<input name="page_options" type="hidden" value="width,border" />
+						<table class="form-table">
+						
+							<tr><th scope="row"><?php esc_html_e('Default width?', 'flags'); ?></th><td>
+								<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default width', 'flags'); ?></span></legend>
+									<label for="width"><input type="number" name="width" class="small-text" value="<?php echo $options['width']; ?>" />px</label>
+								</fieldset>
+							</td></tr>
+						
+							<tr><th scope="row"><?php esc_html_e('Default border?', 'flags'); ?></th><td>
+								<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default border', 'flags'); ?></span></legend>
+									<label for="border"><input type="text" name="border" class="regular-text" value="<?php echo $options['border']; ?>"/></label>
+									<p class="description"><?php esc_html_e('Setting a default border is supported, but not recommended; borders are work better if applied only to those flags with a background matching your site background.', 'flags'); ?></p>
+								</fieldset>
+							</td></tr>
+							
+							<tr><th scope="row"><label for="folder"><?php esc_html_e('Custom Flag Folder', 'flags'); ?></label></th><td>
+								<input name="folder" type="text" id="folder" value="<?php if (strlen($options['folder']) > 0){ echo stripslashes($options['folder']); } ?>" class="large-text" />
+								<p class="description" id="folder-description"><?php esc_html_e('Specify the folder where custom flags will be placed; if the folder does not exist, it will be created with 0755 permissions.', 'flags'); ?></p></td>
+							</td></tr>
+							
+							<tr><th scope="row"><label for="url"><?php esc_html_e('Custom Flag URL', 'flags'); ?></label></th><td>
+								<input name="url" type="text" id="url" value="<?php if (strlen($options['url']) > 0){ echo stripslashes($options['url']); } ?>" class="large-text" />
+								<p class="description" id="url-description"><?php esc_html_e('Specify the URL for the custom flags folder.', 'flags'); ?></p></td>
+							</td></tr>
+							
+						</table>
+		
+						<?php wp_nonce_field('azrcrv-f', 'azrcrv-f-nonce'); ?>
+						<input type="hidden" name="azrcrv_f_data_update" value="yes" />
+						<input type="hidden" name="which_button" value="save_settings" class="short-text" />
+						<input type="submit" value="Save Changes" class="button-primary"/>
+					</form>
 				</p>
 			</div>
 			
 			<div class="azrcrv_f_tabs <?php if ($showsettings == true){ echo 'invisible'; } ?> tabs-2">
-				
-				<div style='padding-left: 6px; '>
+				<p class="azrcrv_f_horiz">
 				<?php
-					$dir = plugin_dir_path(__FILE__).'assets/images';
+					$dir = $options['folder'];
 					$flags = array();
 					if (is_dir($dir)){
 						if ($directory = opendir($dir)){
@@ -298,28 +323,74 @@ function azrcrv_f_settings(){
 								//echo $file;
 								if (substr($file, -3) == 'svg'){
 									$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
-									$flags[] = $filewithoutext;
+									$flags[$filewithoutext] = 'custom';
 								}
 							}
 							closedir($directory);
 						}
-						asort($flags);
-						
+					}
+					
+					$dir = plugin_dir_path(__FILE__).'assets/images';
+					if (is_dir($dir)){
 						if ($directory = opendir($dir)){
-							foreach ($flags as $flag){	
-								$country_name = azrcrv_f_get_country_name($flag);
-								echo '<div style="width: 350px; display: inline-block;">';
-								echo '<object style="width: 20px;" type="image/svg+xml" data="'.plugin_dir_url(__FILE__).'assets/images/'.esc_html($flag).'.svg'.'" class="azrcrv-f" alt="'.esc_html($country_name).'">'.__('[Unknown Flag]', 'flags').'</object> '.esc_html($flag).' ('.esc_html($country_name).')';
-								echo '</div>';
+							while (($file = readdir($directory)) !== false){
+								//echo $file;
+								if (substr($file, -3) == 'svg'){
+									$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+									if (!array_key_exists($filewithoutext, $flags)){
+										$flags[$filewithoutext] = 'standard';
+									}
+								}
 							}
+							closedir($directory);
 						}
 					}
+					
+					// sort flags by name
+					ksort($flags ,2);
+					
+					foreach ($flags as $flag => $type){	
+						
+						if ($type == 'standard'){
+							$folder = plugin_dir_url(__FILE__).'assets/images/';
+						}else{
+							$folder = $options['url'];
+						}
+						
+						$country_name = azrcrv_f_get_country_name($flag);
+						
+						echo '<div style="width: 350px; display: inline-block;">';
+						echo '<object style="width: 20px;" type="image/svg+xml" data="'.esc_attr($folder).esc_attr($flag).'.svg'.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">'.__('[Unknown Flag]', 'flags').'</object> '.esc_attr($flag).' ('.esc_attr($country_name).')';
+						echo '</div>';
+					}
 					?>
-				</div>
+				</p>
+			</div>
+			
+			<div class="azrcrv_f_tabs invisible tabs-3">
+				<p class="azrcrv_f_horiz">
+					<form method="post" action="admin-post.php" enctype="multipart/form-data">
+					<input type="hidden" name="action" value="azrcrv_f_save_options" />
+						<table class="form-table">
+						
+							<tr><th scope="row" colspan="2"><?php printf(esc_html__('Upload files must have an extension of %s', 'flags'), '<strong>svg</strong>'); ?></th></tr>
+							
+							<tr><th scope="row"><?php esc_html_e('Select image to upload:', 'flags'); ?></th><td>
+								<input type="file" name="fileToUpload" id="fileToUpload">
+							</td></tr>
+							
+						</table>
+						
+						<input type="hidden" name="which_button" value="upload_image" class="short-text" />
+						<?php wp_nonce_field('azrcrv-f', 'azrcrv-f-nonce'); ?>
+						<input type="hidden" name="azrcrv_f_data_update" value="yes" />
+						<input type="submit" value="Upload Image" class="button-primary">
+						
+					</form>
+				</p>
 			</div>
 		</div>
 	</div>
-	</form>
 				
 	<div>
 		<p>
@@ -369,21 +440,78 @@ function azrcrv_f_save_options(){
 		// Retrieve original plugin options array
 		$options = get_option('azrcrv-f');
 		
-		$option_name = 'width';
-		if (isset($_POST[$option_name])){
-			$options[$option_name] = sanitize_text_field(intval($_POST[$option_name]));
+		if ($_POST['which_button'] == 'save_settings'){
+			$option_name = 'width';
+			if (isset($_POST[$option_name])){
+				$options[$option_name] = sanitize_text_field(intval($_POST[$option_name]));
+			}
+			
+			$option_name = 'border';
+			if (isset($_POST[$option_name])){
+				$options[$option_name] = sanitize_text_field($_POST[$option_name]);
+			}
+			
+			$option_name = 'folder';
+			if (isset($_POST[$option_name])){
+				$options[$option_name] = sanitize_text_field($_POST[$option_name]);
+			}
+			if (!file_exists(sanitize_text_field($_POST[$option_name]))){
+				mkdir(sanitize_text_field($_POST[$option_name]), 0755, true);
+			}
+			
+			// Store updated options array to database
+			update_option('azrcrv-f', $options);
+			
+			// set response
+			$response = 'settings-updated';
+		}else if ($_POST['which_button'] == 'upload_image'){
+			$target_dir = $options['folder'];
+			$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+			$valid = 1;
+			$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+			
+			// check file size
+			if ($_FILES["fileToUpload"]["size"] > 500000){
+				$valid = 0;
+			}
+
+			// only svg allowed
+			if ($imageFileType != "svg"){
+			  $valid = 0;
+			}
+			
+			// sanitize svg file
+			//use enshrined\svgSanitize\Sanitizer;
+            $svg_sanitizer = new enshrined\svgSanitize\Sanitizer();
+			
+			// Create a new sanitizer instance
+			//$sanitizer = new Sanitizer();
+			
+			// Load the dirty svg
+			$dirtySVG = file_get_contents($target_file);
+			
+			// Pass it to the sanitizer and get it back clean
+			$cleanSVG = $svg_sanitizer->sanitize($dirtySVG);
+			if ($cleanSVG == false){
+				$valid = 0;
+			}
+			
+			// check if upload valid
+			if ($valid == 0){
+				$response = "invalid-upload-request";
+			}else{
+				// upload file
+				if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+					$response = "upload-successful";
+				} else {
+					$response = "upload-failed";
+				}
+			}
+		}else{
+			wp_die(esc_html__('Invalid action.', 'flags'));
 		}
-		
-		$option_name = 'border';
-		if (isset($_POST[$option_name])){
-			$options[$option_name] = sanitize_text_field($_POST[$option_name]);
-		}
-		
-		// Store updated options array to database
-		update_option('azrcrv-f', $options);
-		
 		// Redirect the page to the configuration form that was processed
-		wp_redirect(add_query_arg('page', 'azrcrv-f&settings-updated', admin_url('admin.php')));
+		wp_redirect(add_query_arg('page', 'azrcrv-f&'.$response, admin_url('admin.php')));
 		exit;
 	}
 }
@@ -678,6 +806,8 @@ function azrcrv_f_get_country_name($country_code){
 					'YE' => 'Yemen',
 					'ZM' => 'Zambia',
 					'ZW' => 'Zimbabwe',
+					'PIRATE' => 'Skull and Crossbones',
+					'PIRATE2' => 'Skull and Cross Cutlasses',
 				);
 	
 	if (isset($countries[strtoupper($country_code)])){
@@ -763,9 +893,15 @@ function azrcrv_f_flag($atts, $content = null){
 		$border = 'border: '.esc_html($border).'; ';
 	}
 	
+	if (file_exists(esc_attr($options['folder']).esc_attr($flag).'.svg')){
+		$url = esc_attr($options['url']).esc_attr($flag).'.svg';
+	}else{
+		$url = plugin_dir_url(__FILE__).'assets/images/'.esc_attr($flag).'.svg';
+	}
+	
 	$country_name = azrcrv_f_get_country_name($flag);
 	
-	$image = '<object style="'.$width.' '.$border.' " type="image/svg+xml" data="'.plugin_dir_url(__FILE__).'assets/images/'.esc_html($flag).'.svg'.'" class="azrcrv-f" alt="'.esc_html($country_name).'">'.__('[Unknown Flag]', 'flags').'</object>';
+	$image = '<object style="'.$width.' '.$border.' " type="image/svg+xml" data="'.$url.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">'.__('[Unknown Flag]', 'flags').'</object>';
 	
 	return $image;
 }

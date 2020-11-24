@@ -1,12 +1,12 @@
 === Flags ===
 
 Description:	Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
-Version:		1.6.0
+Version:		1.7.0
 Tags:			flags, posts, pages
 Author:			azurecurve
 Author URI:		https://development.azurecurve.co.uk/
 Plugin URI:		https://development.azurecurve.co.uk/classicpress-plugins/flags/
-Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.6.0/azrcrv-flags.zip
+Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.7.0/azrcrv-flags.zip
 Donate link:	https://development.azurecurve.co.uk/support-development/
 Requires PHP:	5.6
 Requires:		1.0.0
@@ -27,6 +27,8 @@ Flags allows a scalable SVG flag to be displayed in a post or page using the **[
 The shortcode usage is **[flag id="gb" width="20px" border="1px solid black"]** where the **id** is the country code shown below; width and border are optional paramaters and can be defaulted from the settings. Shortcode usage of **[flag="gb"]** where default parameters are to be used is also supported.
 
 Defintion of flags can be found at [https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2](Wikipedia page ISO 3166-1 alpha-2) (although some additional flags have been included).
+
+Custom flags can be added; if a custom flag with the same name as a standard flag exists, the custom flag will be used.
 
 [Shortcodes In Comments](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-comments/) can be used to allow flags in comments and [Shortcodes In Widgets](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-widgets/) can allow them in widgets.
 
@@ -55,12 +57,17 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
 
 # Changelog
 
+### [Version 1.7.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.7.0)
+ * Add functionality for custom flags, including upload of custom flags.
+ * Implement [darylldoyle/svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer) to sanitize svg images on upload.
+ * Added pirate (skull and crossbones) and pirate2 (skull and crossed cutlasses) flags.
+
 ### [Version 1.6.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.6.0)
  * Update plugin to use svg images rather than png ones.
  * Replace png flags with public domain svg images.
  * Add option to set default image width and border attributes.
  * Update flag shortcode to accept id, width and border parameters (backward compatibility has been maintained).
- * Add flags for Italian regions and automonomous regions.
+ * Add flags for Italian regions and autonomous regions.
  * Fix bug in azurecurve menu.
 
 ### [Version 1.5.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.5.0)
