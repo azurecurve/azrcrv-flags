@@ -480,17 +480,13 @@ function azrcrv_f_save_options(){
 			  $valid = 0;
 			}
 			
-			// sanitize svg file
-			//use enshrined\svgSanitize\Sanitizer;
+			// create new sanitizer
             $svg_sanitizer = new enshrined\svgSanitize\Sanitizer();
 			
-			// Create a new sanitizer instance
-			//$sanitizer = new Sanitizer();
-			
-			// Load the dirty svg
+			// load the dirty svg
 			$dirtySVG = file_get_contents($target_file);
 			
-			// Pass it to the sanitizer and get it back clean
+			// pass dirty svg to the sanitizer and get it back clean
 			$cleanSVG = $svg_sanitizer->sanitize($dirtySVG);
 			if ($cleanSVG == false){
 				$valid = 0;

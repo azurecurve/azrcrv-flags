@@ -32,7 +32,7 @@ Custom flags can be added; if a custom flag with the same name as a standard fla
 
 [Shortcodes In Comments](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-comments/) can be used to allow flags in comments and [Shortcodes In Widgets](https://development.azurecurve.co.uk/classicpress-plugins/shortcode-in-widgets/) can allow them in widgets.
 
-This plugin is multisite compatible.
+This plugin is multisite compatible. 
 
 == Installation ==
 
