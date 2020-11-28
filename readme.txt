@@ -1,12 +1,12 @@
 === Flags ===
 
 Description:	Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
-Version:		1.7.0
+Version:		1.8.0
 Tags:			flags, posts, pages
 Author:			azurecurve
 Author URI:		https://development.azurecurve.co.uk/
 Plugin URI:		https://development.azurecurve.co.uk/classicpress-plugins/flags/
-Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.7.0/azrcrv-flags.zip
+Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.8.0/azrcrv-flags.zip
 Donate link:	https://development.azurecurve.co.uk/support-development/
 Requires PHP:	5.6
 Requires:		1.0.0
@@ -57,10 +57,27 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
 
 # Changelog
 
+### [Version 1.8.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.8.0)
+ * Add flags for:
+   * Greater London.
+   * Cornwall.
+   * Orkney.
+   * Shetland.
+   * Isle of Skye.
+   * City of Rome.
+   * German states.
+   * Polish provinces.
+   * US States, Commonwealths and Territories.
+   * Navajo Nation.
+   * Republic of Texas.
+   * Confederate Battle Flag.
+ * Update azurecurve plugin menu.
+ * Fix links on settings page.
+ 
 ### [Version 1.7.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.7.0)
  * Add functionality for custom flags, including upload of custom flags.
  * Implement [darylldoyle/svg-sanitizer](https://github.com/darylldoyle/svg-sanitizer) to sanitize svg images on upload.
- * Added pirate (skull and crossbones) and pirate2 (skull and crossed cutlasses) flags.
+ * Add pirate (skull and crossbones) and pirate2 (skull and crossed cutlasses) flags.
 
 ### [Version 1.6.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.6.0)
  * Update plugin to use svg images rather than png ones.

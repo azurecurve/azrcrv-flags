@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.7.0
+ * Version: 1.8.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -40,6 +40,7 @@ require_once(dirname(__FILE__).'/libraries/svg-sanitizer/autoload.php');
 // add actions
 add_action('wp_enqueue_scripts', 'azrcrv_f_load_css');
 add_action('admin_menu', 'azrcrv_f_create_admin_menu');
+add_action('admin_enqueue_scripts', 'azrcrv_f_load_admin_style');
 add_action('plugins_loaded', 'azrcrv_f_load_languages');
 add_action('admin_post_azrcrv_f_save_options', 'azrcrv_f_save_options');
 
@@ -188,7 +189,6 @@ function azrcrv_f_load_admin_style(){
 	
 	wp_enqueue_script("flags-admin-js", plugins_url('assets/jquery/jquery.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-tabs'));
 }
-add_action('admin_enqueue_scripts', 'azrcrv_f_load_admin_style');
 
 /**
  * Custom plugin image path.
@@ -391,7 +391,7 @@ function azrcrv_f_settings(){
 			</div>
 		</div>
 	</div>
-				
+	
 	<div>
 		<p>
 			<label for="additional-plugins">
@@ -403,7 +403,7 @@ function azrcrv_f_settings(){
 					if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-comments/azrcrv-shortcodes-in-comments.php')){
 						echo "<a href='admin.php?page=azrcrv-sic' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
 					}else{
-						echo "<a href='https://plugins.classicpress.org/shortcodes-in-comments/' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
+						echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-comments/' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
 					}
 					?>
 				</li>
@@ -412,7 +412,7 @@ function azrcrv_f_settings(){
 					if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-widgets/azrcrv-shortcodes-in-widgets.php')){
 						echo "<a href='admin.php?page=azrcrv-siw' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
 					}else{
-						echo "<a href='https://plugins.classicpress.org/shortcodes-in-widgets/' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
+						echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-widgets/' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
 					}
 					?>
 				</li>
@@ -611,6 +611,22 @@ function azrcrv_f_get_country_name($country_code){
 					'GG' => 'Guernsey',
 					'GL' => 'Greenland',
 					'DE' => 'Germany',
+					'DE-BADEN_WURTTEMBERG' => 'Baden-Wuttemberg',
+					'DE-BAVARIA_LOZANGE' => 'Bavaria (Lozanges)',
+					'DE-BAVARIA_STRIPE' => 'Bavara (Stripes)',
+					'DE-BERLIN' => 'Berlin',
+					'DE-BRANDENBURG' => 'Brandenberg',
+					'DE-BREMEN' => 'Bremen',
+					'DE-HESSE' => 'Hesse',
+					'DE-LOWERSAXONY' => 'Lower Saxony',
+					'DE-MECKLENBERG_WESTERNPOMERANIA' => 'Mecklenberg-Western Pomerania',
+					'DE-NORTHRHINE_WESTPHALIA' => 'North Rhine-Westphalia',
+					'DE-RHINELAND_PALEtiNATE' => 'Rhineland-Panatinate',
+					'DE-SAARLAND' => 'Saarland',
+					'DE-SAXONY' => 'Saxony',
+					'DE-SAXONY-ANHALT' => 'Saxony-Anhalt',
+					'DE-SCHLESWIG-HOLSTEIN' => 'Schleswig-Holstien',
+					'DE-THURINGIA' => 'Thuringia',
 					'GP' => 'Guadeloupe',
 					'GU' => 'Guam',
 					'GR' => 'Greece',
@@ -719,6 +735,22 @@ function azrcrv_f_get_country_name($country_code){
 					'PE' => 'Peru',
 					'PK' => 'Pakistan',
 					'PL' => 'Poland',
+					'PL-DS' => 'Lower Silesian Voivodeship',
+					'PL-KP' => 'Kuyavian-Pomeranian Voivodeship',
+					'PL-LU' => 'Lublin Voivodeship',
+					'PL-LB' => 'Lubusz Voivodeship',
+					'PL-LD' => 'Łódź Voivodeship',
+					'PL-MA' => 'Lesser Poland Voivodeship',
+					'PL-MZ' => 'Masovian Voivodeship',
+					'PL-OP' => 'Opole Voivodeship',
+					'PL-PK' => 'Subcarpathian Voivodeship',
+					'PL-PD' => 'Podlaskie Voivodeship',
+					'PL-PM' => 'Pomeranian Voivodeship',
+					'PL-SL' => 'Silesian Voivodeship',
+					'PL-SK' => 'Holy Cross Voivodeship',
+					'PL-WN' => 'Warmian-Masurian Voivodeship',
+					'PL-WP' => 'Greater Poland Voivodeship',
+					'PL-ZP' => 'West Pomeranian Voivodeship',
 					'PA' => 'Panama',
 					'PT' => 'Portugal',
 					'PG' => 'Papua New Guinea',
@@ -777,12 +809,74 @@ function azrcrv_f_get_country_name($country_code){
 					'GB' => 'United Kingdom of Great Britain and Northern Ireland',
 					'GB-ENG' => 'UK of GB & NI - England',
 					'GB-ENG-NORTHUMBERLAND' => 'UK of GB & NI - England - Northumberland',
+					'GB-ENG-CORNWALL' => 'UK of GB & NI - England - Cornwall',
 					'GB-NIR' => 'UK of GB & NI - Northern ireland',
 					'GB-SCT' => 'UK of GB & NI - Scotland',
+					'GB-SCT-ISLEOFSKYE' => 'UK of GB & NI - Scotland - Isle of Skye',
+					'GB-SCT-ORKNEY' => 'UK of GB & NI - Scotland - Orkney',
+					'GB-SCT-SHETLAND' => 'UK of GB & NI - Scotland - Shetland',
+					'GB-SCT-ROYALBANNER' => 'UK of GB & NI - Scotland - Royal Banner',
 					'GB-ULSTER' => 'UK of GB & NI - Ulster',
 					'GB-WLS' => 'UK of GB & NI - Wales',
 					'UA' => 'Ukraine',
 					'US' => 'United States of America',
+					'US-AL' => 'Alabama',
+					'US-AK' => 'Alaska',
+					'US-AZ' => 'Arizona',
+					'US-AR' => 'Arkansas',
+					'US-CA' => 'California',
+					'US-CO' => 'Colorado',
+					'US-CT' => 'Connecticut',
+					'US-DE' => 'Delaware',
+					'US-FL' => 'Florida',
+					'US-GA' => 'Georgia',
+					'US-HI' => 'Hawaii',
+					'US-ID' => 'Idaho',
+					'US-IL' => 'Illinois',
+					'US-IN' => 'Indiana',
+					'US-IA' => 'Iowa',
+					'US-KS' => 'Kansas',
+					'US-KY' => 'Kentucky',
+					'US-LA' => 'Louisiana',
+					'US-ME' => 'Maine',
+					'US-MD' => 'Maryland',
+					'US-MA' => 'Massachusetts',
+					'US-MI' => 'Michigan',
+					'US-MN' => 'Minnesota',
+					'US-MS' => 'Mississippi',
+					'US-MO' => 'Missouri',
+					'US-MT' => 'Montana',
+					'US-NE' => 'Nebraska',
+					'US-NV' => 'Nevada',
+					'US-NH' => 'New Hampshire',
+					'US-NJ' => 'New Jersey',
+					'US-NM' => 'New Mexico',
+					'US-NY' => 'New York',
+					'US-NC' => 'North Carolina',
+					'US-ND' => 'North Dakota',
+					'US-OH' => 'Ohio',
+					'US-OK' => 'Oklahoma',
+					'US-OR' => 'Oregon',
+					'US-OR' => 'Oregon (Reverse)',
+					'US-PA' => 'Pennsylvania',
+					'US-RI' => 'Rhode Island',
+					'US-SC' => 'South Carolina',
+					'US-SD' => 'South Dakota',
+					'US-TN' => 'Tennessee',
+					'US-TX' => 'Texas',
+					'US-UT' => 'Utah',
+					'US-VT' => 'Vermont',
+					'US-VA' => 'Virginia',
+					'US-WA' => 'Washington',
+					'US-WV' => 'West Virginia',
+					'US-WI' => 'Wisconsin',
+					'US-WY' => 'Wyoming',
+					'US-AS' => 'American Samoa',
+					'US-DC' => 'District of Columbia',
+					'US-GU' => 'Guam',
+					'US-MP' => 'Northern Mariana Islands',
+					'US-PR' => 'Puerto Rico',
+					'US-VI' => 'Virgin Islands',
 					'BF' => 'Burkina Faso',
 					'UY' => 'Uruguay',
 					'UZ' => 'Uzbekistan',
@@ -804,6 +898,9 @@ function azrcrv_f_get_country_name($country_code){
 					'ZW' => 'Zimbabwe',
 					'PIRATE' => 'Skull and Crossbones',
 					'PIRATE2' => 'Skull and Cross Cutlasses',
+					'CONFEDERATE' => 'Confederate Battle Flag',
+					'NAVAJO' => 'Navajo Nation',
+					'TEXAS' => 'Republic of Texas',
 				);
 	
 	if (isset($countries[strtoupper($country_code)])){
@@ -897,7 +994,7 @@ function azrcrv_f_flag($atts, $content = null){
 	
 	$country_name = azrcrv_f_get_country_name($flag);
 	
-	$image = '<object style="'.$width.' '.$border.' " type="image/svg+xml" data="'.$url.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">'.__('[Unknown Flag]', 'flags').'</object>';
+	$image = '<object style="'.$width.' '.$border.' " type="image/svg+xml" data="'.$url.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">&nbsp;</object>';
 	
 	return $image;
 }
