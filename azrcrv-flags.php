@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.8.0
+ * Version: 1.9.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -28,6 +28,7 @@ add_action('admin_init', 'azrcrv_create_plugin_menu_f');
 
 // include update client
 require_once(dirname(__FILE__).'/libraries/updateclient/UpdateClient.class.php');
+
 // include svg-sanitizer
 require_once(dirname(__FILE__).'/libraries/svg-sanitizer/autoload.php');
 
@@ -315,52 +316,18 @@ function azrcrv_f_settings(){
 			<div class="azrcrv_f_tabs <?php if ($showsettings == true){ echo 'invisible'; } ?> tabs-2">
 				<p class="azrcrv_f_horiz">
 				<?php
-					$dir = $options['folder'];
-					$flags = array();
-					if (is_dir($dir)){
-						if ($directory = opendir($dir)){
-							while (($file = readdir($directory)) !== false){
-								//echo $file;
-								if (substr($file, -3) == 'svg'){
-									$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
-									$flags[$filewithoutext] = 'custom';
-								}
-							}
-							closedir($directory);
-						}
-					}
+					$flags = azrcrv_f_get_flags();
 					
-					$dir = plugin_dir_path(__FILE__).'assets/images';
-					if (is_dir($dir)){
-						if ($directory = opendir($dir)){
-							while (($file = readdir($directory)) !== false){
-								//echo $file;
-								if (substr($file, -3) == 'svg'){
-									$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
-									if (!array_key_exists($filewithoutext, $flags)){
-										$flags[$filewithoutext] = 'standard';
-									}
-								}
-							}
-							closedir($directory);
-						}
-					}
-					
-					// sort flags by name
-					ksort($flags ,2);
-					
-					foreach ($flags as $flag => $type){	
+					foreach ($flags as $flag_id => $flag){	
 						
-						if ($type == 'standard'){
+						if ($flag['type'] == 'standard'){
 							$folder = plugin_dir_url(__FILE__).'assets/images/';
 						}else{
 							$folder = $options['url'];
 						}
 						
-						$country_name = azrcrv_f_get_country_name($flag);
-						
 						echo '<div style="width: 350px; display: inline-block;">';
-						echo '<object style="width: 20px;" type="image/svg+xml" data="'.esc_attr($folder).esc_attr($flag).'.svg'.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">'.__('[Unknown Flag]', 'flags').'</object> '.esc_attr($flag).' ('.esc_attr($country_name).')';
+							echo '<img style="width: 20px;" src="'.esc_attr($folder).esc_attr($flag_id).'.svg'.'" class="azrcrv-f" alt="'.esc_attr($flag['name']).'" /> '.esc_attr($flag_id).' ('.esc_attr($flag['name']).')';
 						echo '</div>';
 					}
 					?>
@@ -422,6 +389,75 @@ function azrcrv_f_settings(){
 
 	<?php
 }
+
+/**
+ * Get all flags (both custom and standard).
+ *
+ * @since 1.9.0
+ *
+ */
+function azrcrv_f_get_flags(){
+	
+	$options = azrcrv_f_get_option('azrcrv-f');
+	
+	$dir = $options['folder'];
+	$flags = array();
+	if (is_dir($dir)){
+		if ($directory = opendir($dir)){
+			while (($file = readdir($directory)) !== false){
+				//echo $file;
+				if (substr($file, -3) == 'svg'){
+					$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+					$flags[$filewithoutext] = array(
+														'type' => 'custom',
+														'name' => azrcrv_f_get_country_name($filewithoutext),
+													);
+				}
+			}
+			closedir($directory);
+		}
+	}
+	
+	$dir = plugin_dir_path(__FILE__).'assets/images';
+	if (is_dir($dir)){
+		if ($directory = opendir($dir)){
+			while (($file = readdir($directory)) !== false){
+				//echo $file;
+				if (substr($file, -3) == 'svg'){
+					$filewithoutext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
+					if (!array_key_exists($filewithoutext, $flags)){
+						$flags[$filewithoutext] = array(
+															'type' => 'standard',
+															'name' => azrcrv_f_get_country_name($filewithoutext),
+														);
+					}
+				}
+			}
+			closedir($directory);
+		}
+	}
+					
+	// sort flags by name
+	//ksort($flags ,2);
+	
+	// sort alphabetically by name
+	uasort($flags, 'azrcrv_f_sort_flags_by_country_name');
+	
+	return $flags;
+}
+
+/**
+ * Sort flags by name.
+ *
+ * @since 1.9.0
+ *
+ */
+function azrcrv_f_sort_flags_by_country_name($a, $b){
+
+	return strnatcasecmp($a['name'], $b['name']);
+
+}
+
 
 /**
  * Save settings.
@@ -611,22 +647,22 @@ function azrcrv_f_get_country_name($country_code){
 					'GG' => 'Guernsey',
 					'GL' => 'Greenland',
 					'DE' => 'Germany',
-					'DE-BADEN_WURTTEMBERG' => 'Baden-Wuttemberg',
-					'DE-BAVARIA_LOZANGE' => 'Bavaria (Lozanges)',
-					'DE-BAVARIA_STRIPE' => 'Bavara (Stripes)',
-					'DE-BERLIN' => 'Berlin',
-					'DE-BRANDENBURG' => 'Brandenberg',
-					'DE-BREMEN' => 'Bremen',
-					'DE-HESSE' => 'Hesse',
-					'DE-LOWERSAXONY' => 'Lower Saxony',
-					'DE-MECKLENBERG_WESTERNPOMERANIA' => 'Mecklenberg-Western Pomerania',
-					'DE-NORTHRHINE_WESTPHALIA' => 'North Rhine-Westphalia',
-					'DE-RHINELAND_PALEtiNATE' => 'Rhineland-Panatinate',
-					'DE-SAARLAND' => 'Saarland',
-					'DE-SAXONY' => 'Saxony',
-					'DE-SAXONY-ANHALT' => 'Saxony-Anhalt',
-					'DE-SCHLESWIG-HOLSTEIN' => 'Schleswig-Holstien',
-					'DE-THURINGIA' => 'Thuringia',
+					'DE-BADEN_WURTTEMBERG' => 'Germany - Baden-Wuttemberg',
+					'DE-BAVARIA_LOZENGE' => 'Germany - Bavaria (Lozanges)',
+					'DE-BAVARIA_STRIPE' => 'Germany - Bavara (Stripes)',
+					'DE-BERLIN' => 'Germany - Berlin',
+					'DE-BRANDENBURG' => 'Germany - Brandenberg',
+					'DE-BREMEN' => 'Germany - Bremen',
+					'DE-HESSE' => 'Germany - Hesse',
+					'DE-LOWERSAXONY' => 'Germany - Lower Saxony',
+					'DE-MECKLENBURG_WESTERNPOMERANIA' => 'Germany - Mecklenberg-Western Pomerania',
+					'DE-NORTHRHINE_WESTPHALIA' => 'Germany - North Rhine-Westphalia',
+					'DE-RHINELAND_PALATINATE' => 'Germany - Rhineland-Palatinate',
+					'DE-SAARLAND' => 'Germany - Saarland',
+					'DE-SAXONY' => 'Germany - Saxony',
+					'DE-SAXONY_ANHALT' => 'Germany - Saxony-Anhalt',
+					'DE-SCHLESWIG_HOLSTEIN' => 'Germany - Schleswig-Holstien',
+					'DE-THURINGIA' => 'Germany - Thuringia',
 					'GP' => 'Guadeloupe',
 					'GU' => 'Guam',
 					'GR' => 'Greece',
@@ -656,16 +692,17 @@ function azrcrv_f_get_country_name($country_code){
 					'IT-FRIULI_VENEZIAGIULIA' => 'Italy - Friuli-Venezia Giulia',
 					'IT-LAZIO' => 'Italy - Lazio',
 					'IT-LIGURIA' => 'Italy - Liguria',
-					'IT-LONBARDY' => 'Italy - Lombardy',
+					'IT-LOMBARDY' => 'Italy - Lombardy',
 					'IT-MARCHE' => 'Italy - Marche',
 					'IT-MOLISE' => 'Italy - Molise',
 					'IT-PIEDMONT' => 'Italy - Piedmont',
+					'IT-ROME' => 'Italy - Rome',
 					'IT-SARDINIA' => 'Italy - Sardinia',
 					'IT-SICILY' => 'Italy - Sicily',
 					'IT-TRENTINO_SOUTHTYROL' => 'Italy - Trentino-South Tyrol',
 					'IT-TUSCANY' => 'Italy - Tuscany',
 					'IT-UMBRIA' => 'Italy - Umbria',
-					'IT-VALLEAOSTA' => 'Italy - Aosta Valley',
+					'IT-AOSTAVALLEY' => 'Italy - Aosta Valley',
 					'IT-VENETO' => 'Italy - Veneto',
 					'CI' => 'Cote d\'Ivoire',
 					'IQ' => 'Iraq',
@@ -735,22 +772,22 @@ function azrcrv_f_get_country_name($country_code){
 					'PE' => 'Peru',
 					'PK' => 'Pakistan',
 					'PL' => 'Poland',
-					'PL-DS' => 'Lower Silesian Voivodeship',
-					'PL-KP' => 'Kuyavian-Pomeranian Voivodeship',
-					'PL-LU' => 'Lublin Voivodeship',
-					'PL-LB' => 'Lubusz Voivodeship',
-					'PL-LD' => 'Łódź Voivodeship',
-					'PL-MA' => 'Lesser Poland Voivodeship',
-					'PL-MZ' => 'Masovian Voivodeship',
-					'PL-OP' => 'Opole Voivodeship',
-					'PL-PK' => 'Subcarpathian Voivodeship',
-					'PL-PD' => 'Podlaskie Voivodeship',
-					'PL-PM' => 'Pomeranian Voivodeship',
-					'PL-SL' => 'Silesian Voivodeship',
-					'PL-SK' => 'Holy Cross Voivodeship',
-					'PL-WN' => 'Warmian-Masurian Voivodeship',
-					'PL-WP' => 'Greater Poland Voivodeship',
-					'PL-ZP' => 'West Pomeranian Voivodeship',
+					'PL-DS' => 'Poland - Lower Silesian Voivodeship',
+					'PL-KP' => 'Poland - Kuyavian-Pomeranian Voivodeship',
+					'PL-LU' => 'Poland - Lublin Voivodeship',
+					'PL-LB' => 'Poland - Lubusz Voivodeship',
+					'PL-LD' => 'Poland - Łódź Voivodeship',
+					'PL-MA' => 'Poland - Lesser Poland Voivodeship',
+					'PL-MZ' => 'Poland - Masovian Voivodeship',
+					'PL-OP' => 'Poland - Opole Voivodeship',
+					'PL-PK' => 'Poland - Subcarpathian Voivodeship',
+					'PL-PD' => 'Poland - Podlaskie Voivodeship',
+					'PL-PM' => 'Poland - Pomeranian Voivodeship',
+					'PL-SL' => 'Poland - Silesian Voivodeship',
+					'PL-SK' => 'Poland - Holy Cross Voivodeship',
+					'PL-WN' => 'Poland - Warmian-Masurian Voivodeship',
+					'PL-WP' => 'Poland - Greater Poland Voivodeship',
+					'PL-ZP' => 'Poland - West Pomeranian Voivodeship',
 					'PA' => 'Panama',
 					'PT' => 'Portugal',
 					'PG' => 'Papua New Guinea',
@@ -818,65 +855,66 @@ function azrcrv_f_get_country_name($country_code){
 					'GB-SCT-ROYALBANNER' => 'UK of GB & NI - Scotland - Royal Banner',
 					'GB-ULSTER' => 'UK of GB & NI - Ulster',
 					'GB-WLS' => 'UK of GB & NI - Wales',
+					'GB-CORNWALL' => 'UK of GB & NI - England - Cornwall',
 					'UA' => 'Ukraine',
 					'US' => 'United States of America',
-					'US-AL' => 'Alabama',
-					'US-AK' => 'Alaska',
-					'US-AZ' => 'Arizona',
-					'US-AR' => 'Arkansas',
-					'US-CA' => 'California',
-					'US-CO' => 'Colorado',
-					'US-CT' => 'Connecticut',
-					'US-DE' => 'Delaware',
-					'US-FL' => 'Florida',
-					'US-GA' => 'Georgia',
-					'US-HI' => 'Hawaii',
-					'US-ID' => 'Idaho',
-					'US-IL' => 'Illinois',
-					'US-IN' => 'Indiana',
-					'US-IA' => 'Iowa',
-					'US-KS' => 'Kansas',
-					'US-KY' => 'Kentucky',
-					'US-LA' => 'Louisiana',
-					'US-ME' => 'Maine',
-					'US-MD' => 'Maryland',
-					'US-MA' => 'Massachusetts',
-					'US-MI' => 'Michigan',
-					'US-MN' => 'Minnesota',
-					'US-MS' => 'Mississippi',
-					'US-MO' => 'Missouri',
-					'US-MT' => 'Montana',
-					'US-NE' => 'Nebraska',
-					'US-NV' => 'Nevada',
-					'US-NH' => 'New Hampshire',
-					'US-NJ' => 'New Jersey',
-					'US-NM' => 'New Mexico',
-					'US-NY' => 'New York',
-					'US-NC' => 'North Carolina',
-					'US-ND' => 'North Dakota',
-					'US-OH' => 'Ohio',
-					'US-OK' => 'Oklahoma',
-					'US-OR' => 'Oregon',
-					'US-OR' => 'Oregon (Reverse)',
-					'US-PA' => 'Pennsylvania',
-					'US-RI' => 'Rhode Island',
-					'US-SC' => 'South Carolina',
-					'US-SD' => 'South Dakota',
-					'US-TN' => 'Tennessee',
-					'US-TX' => 'Texas',
-					'US-UT' => 'Utah',
-					'US-VT' => 'Vermont',
-					'US-VA' => 'Virginia',
-					'US-WA' => 'Washington',
-					'US-WV' => 'West Virginia',
-					'US-WI' => 'Wisconsin',
-					'US-WY' => 'Wyoming',
-					'US-AS' => 'American Samoa',
-					'US-DC' => 'District of Columbia',
-					'US-GU' => 'Guam',
-					'US-MP' => 'Northern Mariana Islands',
-					'US-PR' => 'Puerto Rico',
-					'US-VI' => 'Virgin Islands',
+					'US-AL' => 'USA - Alabama',
+					'US-AK' => 'USA - Alaska',
+					'US-AZ' => 'USA - Arizona',
+					'US-AR' => 'USA - Arkansas',
+					'US-CA' => 'USA - California',
+					'US-CO' => 'USA - Colorado',
+					'US-CT' => 'USA - Connecticut',
+					'US-DE' => 'USA - Delaware',
+					'US-FL' => 'USA - Florida',
+					'US-GA' => 'USA - Georgia',
+					'US-HI' => 'USA - Hawaii',
+					'US-ID' => 'USA - Idaho',
+					'US-IL' => 'USA - Illinois',
+					'US-IN' => 'USA - Indiana',
+					'US-IA' => 'USA - Iowa',
+					'US-KS' => 'USA - Kansas',
+					'US-KY' => 'USA - Kentucky',
+					'US-LA' => 'USA - Louisiana',
+					'US-ME' => 'USA - Maine',
+					'US-MD' => 'USA - Maryland',
+					'US-MA' => 'USA - Massachusetts',
+					'US-MI' => 'USA - Michigan',
+					'US-MN' => 'USA - Minnesota',
+					'US-MS' => 'USA - Mississippi',
+					'US-MO' => 'USA - Missouri',
+					'US-MT' => 'USA - Montana',
+					'US-NE' => 'USA - Nebraska',
+					'US-NV' => 'USA - Nevada',
+					'US-NH' => 'USA - New Hampshire',
+					'US-NJ' => 'USA - New Jersey',
+					'US-NM' => 'USA - New Mexico',
+					'US-NY' => 'USA - New York',
+					'US-NC' => 'USA - North Carolina',
+					'US-ND' => 'USA - North Dakota',
+					'US-OH' => 'USA - Ohio',
+					'US-OK' => 'USA - Oklahoma',
+					'US-OR' => 'USA - Oregon',
+					'US-OR-REVERSE' => 'USA - Oregon (Reverse)',
+					'US-PA' => 'USA - Pennsylvania',
+					'US-RI' => 'USA - Rhode Island',
+					'US-SC' => 'USA - South Carolina',
+					'US-SD' => 'USA - South Dakota',
+					'US-TN' => 'USA - Tennessee',
+					'US-TX' => 'USA - Texas',
+					'US-UT' => 'USA - Utah',
+					'US-VT' => 'USA - Vermont',
+					'US-VA' => 'USA - Virginia',
+					'US-WA' => 'USA - Washington',
+					'US-WV' => 'USA - West Virginia',
+					'US-WI' => 'USA - Wisconsin',
+					'US-WY' => 'USA - Wyoming',
+					'US-AS' => 'USA - American Samoa',
+					'US-DC' => 'USA - District of Columbia',
+					'US-GU' => 'USA - Guam',
+					'US-MP' => 'USA - Northern Mariana Islands',
+					'US-PR' => 'USA - Puerto Rico',
+					'US-VI' => 'USA - Virgin Islands',
 					'BF' => 'Burkina Faso',
 					'UY' => 'Uruguay',
 					'UZ' => 'Uzbekistan',
@@ -899,7 +937,7 @@ function azrcrv_f_get_country_name($country_code){
 					'PIRATE' => 'Skull and Crossbones',
 					'PIRATE2' => 'Skull and Cross Cutlasses',
 					'CONFEDERATE' => 'Confederate Battle Flag',
-					'NAVAJO' => 'Navajo Nation',
+					'NAVAJONATION' => 'Navajo Nation',
 					'TEXAS' => 'Republic of Texas',
 				);
 	
@@ -994,7 +1032,7 @@ function azrcrv_f_flag($atts, $content = null){
 	
 	$country_name = azrcrv_f_get_country_name($flag);
 	
-	$image = '<object style="'.$width.' '.$border.' " type="image/svg+xml" data="'.$url.'" class="azrcrv-f" alt="'.esc_attr($country_name).'">&nbsp;</object>';
+	$image = '<img style="'.$width.' '.$border.' " src="'.$url.'" class="azrcrv-f" alt="'.esc_attr($country_name).'" title="'.esc_attr($country_name).'" />';
 	
 	return $image;
 }

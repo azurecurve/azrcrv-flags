@@ -1,12 +1,12 @@
 === Flags ===
 
 Description:	Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
-Version:		1.8.0
+Version:		1.9.0
 Tags:			flags, posts, pages
 Author:			azurecurve
 Author URI:		https://development.azurecurve.co.uk/
 Plugin URI:		https://development.azurecurve.co.uk/classicpress-plugins/flags/
-Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.8.0/azrcrv-flags.zip
+Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v1.9.0/azrcrv-flags.zip
 Donate link:	https://development.azurecurve.co.uk/support-development/
 Requires PHP:	5.6
 Requires:		1.0.0
@@ -57,20 +57,14 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
 
 # Changelog
 
+### [Version 1.9.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.9.0)
+ * Add function to get all flags.
+ * Add function to order flags by name (case insensitive).
+ * Update names of German states, Italian regions, Polish provinces, US States, Commonwealths and Territories.
+ * Change flag output to use img tag.
+ 
 ### [Version 1.8.0](https://github.com/azurecurve/azrcrv-flags/releases/tag/v1.8.0)
- * Add flags for:
-   * Greater London.
-   * Cornwall.
-   * Orkney.
-   * Shetland.
-   * Isle of Skye.
-   * City of Rome.
-   * German states.
-   * Polish provinces.
-   * US States, Commonwealths and Territories.
-   * Navajo Nation.
-   * Republic of Texas.
-   * Confederate Battle Flag.
+ * Add flags for: Greater London, Cornwall, Orkney, Shetland, Isle of Skye, City of Rome, German states, Polish provinces, US States, Commonwealths and Territories, Navajo Nation, Republic of Texas and Confederate Battle Flag.
  * Update azurecurve plugin menu.
  * Fix links on settings page.
  
