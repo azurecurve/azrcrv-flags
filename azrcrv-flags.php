@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.9.0
+ * Version: 1.9.1
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -243,7 +243,7 @@ function azrcrv_f_settings(){
 		}else if(isset($_GET['upload-successful'])){
 			echo '<div class="notice notice-success is-dismissible"><p><strong>'.esc_html__('Upload successful.', 'flags').'</strong></p></div>';
 		}else if (isset($_GET['invalid-upload-request'])){
-			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Invaluid upload request; upload failed.', 'flags').'</strong></p></div>';
+			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Invalid upload request; upload failed.', 'flags').'</strong></p></div>';
 		}else if (isset($_GET['settings-updated'])){
 			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Upload failed.', 'flags').'</strong></p></div>';
 		}
@@ -318,7 +318,7 @@ function azrcrv_f_settings(){
 				<?php
 					$flags = azrcrv_f_get_flags();
 					
-					foreach ($flags as $flag_id => $flag){	
+					foreach ($flags as $flag_id => $flag){
 						
 						if ($flag['type'] == 'standard'){
 							$folder = plugin_dir_url(__FILE__).'assets/images/';
@@ -458,7 +458,6 @@ function azrcrv_f_sort_flags_by_country_name($a, $b){
 
 }
 
-
 /**
  * Save settings.
  *
@@ -493,6 +492,11 @@ function azrcrv_f_save_options(){
 			}
 			if (!file_exists(sanitize_text_field($_POST[$option_name]))){
 				mkdir(sanitize_text_field($_POST[$option_name]), 0755, true);
+			}
+			
+			$option_name = 'url';
+			if (isset($_POST[$option_name])){
+				$options[$option_name] = sanitize_text_field($_POST[$option_name]);
 			}
 			
 			// Store updated options array to database
@@ -1024,7 +1028,7 @@ function azrcrv_f_flag($atts, $content = null){
 		$border = 'border: '.esc_html($border).'; ';
 	}
 	
-	if (file_exists(esc_attr($options['folder']).esc_attr($flag).'.svg')){
+	if (file_exists(trailingslashit(esc_attr($options['folder'])).esc_attr($flag).'.svg')){
 		$url = esc_attr($options['url']).esc_attr($flag).'.svg';
 	}else{
 		$url = plugin_dir_url(__FILE__).'assets/images/'.esc_attr($flag).'.svg';
