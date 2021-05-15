@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------------------
  * Plugin Name: Flags
  * Description: Allows flags to be added to posts and pages using a shortcode.
- * Version: 1.9.1
+ * Version: 1.10.0
  * Author: azurecurve
  * Author URI: https://development.azurecurve.co.uk/classicpress-plugins/
  * Plugin URI: https://development.azurecurve.co.uk/classicpress-plugins/flags/
@@ -42,6 +42,7 @@ require_once(dirname(__FILE__).'/libraries/svg-sanitizer/autoload.php');
 add_action('wp_enqueue_scripts', 'azrcrv_f_load_css');
 add_action('admin_menu', 'azrcrv_f_create_admin_menu');
 add_action('admin_enqueue_scripts', 'azrcrv_f_load_admin_style');
+add_action('admin_enqueue_scripts', 'azrcrv_f_load_admin_jquery');
 add_action('plugins_loaded', 'azrcrv_f_load_languages');
 add_action('admin_post_azrcrv_f_save_options', 'azrcrv_f_save_options');
 
@@ -153,7 +154,7 @@ function azrcrv_f_add_plugin_action_link($links, $file){
 	}
 
 	if ($file == $this_plugin){
-		$settings_link = '<a href="'.admin_url('admin.php?page=azrcrv-f').'"><img src="'.plugins_url('/pluginmenu/images/Favicon-16x16.png', __FILE__).'" style="padding-top: 2px; margin-right: -5px; height: 16px; width: 16px;" alt="azurecurve" />'.esc_html__('Settings' ,'flags').'</a>';
+		$settings_link = '<a href="'.admin_url('admin.php?page=azrcrv-f').'"><img src="'.plugins_url('/pluginmenu/images/logo.svg', __FILE__).'" style="padding-top: 2px; margin-right: -5px; height: 16px; width: 16px;" alt="azurecurve" />'.esc_html__('Settings' ,'flags').'</a>';
 		array_unshift($links, $settings_link);
 	}
 
@@ -185,10 +186,28 @@ function azrcrv_f_create_admin_menu(){
  *
  */
 function azrcrv_f_load_admin_style(){
-    wp_register_style('flags-css', plugins_url('assets/css/admin.css', __FILE__), false, '1.0.0');
-    wp_enqueue_style( 'flags-css' );
 	
-	wp_enqueue_script("flags-admin-js", plugins_url('assets/jquery/jquery.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-tabs'));
+	global $pagenow;
+	
+	if ($pagenow == 'admin.php' AND $_GET['page'] == 'azrcrv-f'){
+		wp_register_style('azrcrv-f-admin-css', plugins_url('assets/css/admin.css', __FILE__), false, '1.0.0');
+		wp_enqueue_style('azrcrv-f-admin-css');
+	}
+}
+
+/**
+ * Load media uploaded.
+ *
+ * @since 1.10.0
+ *
+ */
+function azrcrv_f_load_admin_jquery(){
+	
+	global $pagenow;
+	
+	if ($pagenow == 'admin.php' AND $_GET['page'] == 'azrcrv-f'){
+		wp_enqueue_script('azrcrv-f-admin-jquery', plugins_url('assets/jquery/admin.js', __FILE__), array('jquery'));
+	}
 }
 
 /**
@@ -234,10 +253,79 @@ function azrcrv_f_settings(){
 	$options = azrcrv_f_get_option('azrcrv-f');
 	$saved_options = get_option('azrcrv-f');
 	
-	echo '<div id="azrcrv-f-general" class="wrap">';
+	$tab_1_label = esc_html__('Available flags', 'flags');
+	$tab_1 = '<p>'.sprintf(esc_html__('The shortcode usage is %s where the %s is the country code shown below; width and border are optional paramaters and can be defaulted from the settings. Shortcode usage of %s where default parameters are to be used is also supported.', 'flags'), '<strong>[flag id="gb" width="20px" border="1px solid black"]</strong>', '<strong>id</strong>', '<strong>[flag="gb"]</strong>').'</p>';
 	
-		echo '<h1>'.esc_html(get_admin_page_title()).'</h1>';
+	$flags = azrcrv_f_get_flags();
+	$flag_output = '';
+	foreach ($flags as $flag_id => $flag){
+		if ($flag['type'] == 'standard'){
+			$folder = plugin_dir_url(__FILE__).'assets/images/';
+		}else{
+			$folder = $options['url'];
+		}
 		
+		$flag_output .= '<div class="azrcrv-f"><img style="width: 20px;" src="'.esc_attr($folder).esc_attr($flag_id).'.svg'.'" class="azrcrv-f" alt="'.esc_attr($flag['name']).'" /> '.esc_attr($flag_id).' ('.esc_attr($flag['name']).')</div>';
+	}
+	$tab_1 .= "<p>$flag_output</p>";
+	$tab_1 .= '<p>'.sprintf(esc_html__('Defintion of most flags can be found at %s (although some additional flags have been included).', 'flags'), '<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">Wikipedia page ISO 3166-1 alpha-2</a>').'</p>';
+	
+	$tab_2_label = esc_html__('Custom Flag Location', 'flags');
+	$custom_flag_folder_label = esc_html__('Custom Flag Folder', 'flags');
+	$custom_flag_folder = esc_attr($options['folder']);
+	$custom_flag_folder_description = sprintf(esc_html__('Specify the folder where custom flags will be placed; if the folder does not exist, it will be created with %d permissions.', 'flags'), '0755');
+	$custom_flag_url_label = esc_html__('Custom Flag URL', 'flags');
+	$custom_flag_url = esc_attr($options['url']);
+	$custom_flag_url_description = sprintf(esc_html__('Specify the URL for the custom flags folder.', 'flags'), '0755');
+	$tab_2 = "
+					<table class='form-table'>
+						
+						<tr><th scope='row'><label for='folder'>$custom_flag_folder_label</label></th><td>
+							<input name='folder' type='text' id='folder' value='$custom_flag_folder' class='large-text' />
+							<p class='description' id='folder-description'>$custom_flag_folder_description</p></td>
+						</td></tr>
+						
+						<tr><th scope='row'><label for='url'>$custom_flag_url_label</label></th><td>
+							<input name='url' type='text' id='url' value='$custom_flag_url' class='large-text' />
+							<p class='description' id='url-description'>$custom_flag_url_description</p></td>
+						</td></tr>
+						
+					</table>";
+	
+	if (isset($saved_options)){
+		$tab_3_label = esc_html__('Upload Custom Flag', 'flags');
+		$file_format_warning_th = sprintf(esc_html__('Upload files must have an extension of %s', 'flags'), '<strong>svg</strong>');
+		$file_upload_th = esc_html__('Select image to upload:', 'flags');
+		$file_upload_td = "<input type='file' name='fileToUpload' id='fileToUpload'>";
+		$tab_3 = "
+					<table class='form-table'>
+						<tr>
+							<th scope='row' colspan=2>
+								$file_format_warning_th
+							</th>
+						</tr>
+						<tr>
+							<th scope='row'>
+								$file_upload_th
+							</th>
+							
+							<td>
+								$file_upload_td
+							</td>
+						</tr>
+					</table>";
+	}
+	?>
+	
+	<div id="azrcrv-f-general" class="wrap">
+		<h1>
+			<?php
+				echo '<a href="https://development.azurecurve.co.uk/classicpress-plugins/"><img src="'.plugins_url('/pluginmenu/images/logo.svg', __FILE__).'" style="padding-right: 6px; height: 20px; width: 20px;" alt="azurecurve" /></a>';
+				esc_html_e(get_admin_page_title());
+			?>
+		</h1>
+		
+		<?php
 		if(isset($_GET['settings-updated'])){
 			echo '<div class="notice notice-success is-dismissible"><p><strong>'.esc_html__('Settings have been saved.', 'flags').'</strong></p></div>';
 		}else if(isset($_GET['upload-successful'])){
@@ -247,144 +335,94 @@ function azrcrv_f_settings(){
 		}else if (isset($_GET['settings-updated'])){
 			echo '<div class="notice notice-error is-dismissible"><p><strong>'.esc_html__('Upload failed.', 'flags').'</strong></p></div>';
 		}
-		
-		if (isset($saved_options['width'])){
-			$showsettings = false;
-		}else{
-			$showsettings = true;
-		}
-		
 		?>
 		
-		<label for="explanation">
-			<p><?php printf(esc_html__('%s allows a scalable SVG flag to be displayed in a post or page using the %s shortcode.', 'flags'), 'Flags', '<strong>[flag]</strong>'); ?></p>
-			<p><?php printf(esc_html__('The shortcode usage is %s where the %s is the country code shown below; width and border are optional paramaters and can be defaulted from the settings. Shortcode usage of %s where default parameters are to be used is also supported.', 'flags'), '<strong>[flag id="gb" width="20px" border="1px solid black"]</strong>', '<strong>id</strong>', '<strong>[flag="gb"]</strong>'); ?></p>
-			<p><?php printf(esc_html__('Defintion of most flags can be found at %s (although some additional flags have been included).', 'flags'), '<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">Wikipedia page ISO 3166-1 alpha-2</a>'); ?></p>
-		</label>
+		<p><?php printf(esc_html__('%s allows a scalable SVG flag to be displayed in a post or page using the %s shortcode.', 'flags'), 'Flags', '<strong>[flag]</strong>'); ?></p>
 		
-		<h2 class="nav-tab-wrapper nav-tab-wrapper-azrcrv-f">
-			<a class="nav-tab <?php if ($showsettings == true){ echo 'nav-tab-active'; } ?>" data-item=".tabs-1" href="#tabs-1"><?php _e('Default Settings', 'flags') ?></a>
-			<a class="nav-tab <?php if ($showsettings == false){ echo 'nav-tab-active'; } ?>" data-item=".tabs-2" href="#tabs-2"><?php _e('Available Flags', 'flags') ?></a>
-			<?php
-			if (isset($saved_options)){
-				echo '<a class="nav-tab" data-item=".tabs-3" href="#tabs-3">'.__('Upload Flag', 'flags').'</a>';
-			}
-			?>
-		</h2>
-
-		<div>
-			<div class="azrcrv_f_tabs <?php if ($showsettings == false){ echo 'invisible'; } ?> tabs-1">
-				<p class="azrcrv_f_horiz">
+		<div id="tabs" class="ui-tabs">
+			<ul class="ui-tabs-nav ui-widget-header" role="tablist">
+				<li class="ui-state-default ui-state-active" aria-controls="tab-panel-1" aria-labelledby="tab-1" aria-selected="true" aria-expanded="true" role="tab">
+					<a id="tab-1" class="ui-tabs-anchor" href="#tab-panel-1"><?php echo $tab_1_label; ?></a>
+				</li>
+				<li class="ui-state-default" aria-controls="tab-panel-2" aria-labelledby="tab-2" aria-selected="false" aria-expanded="false" role="tab">
+					<a id="tab-2" class="ui-tabs-anchor" href="#tab-panel-2"><?php echo $tab_2_label; ?></a>
+				</li>
+				<?php if (isset($saved_options)){ ?>
+					<li class="ui-state-default" aria-controls="tab-panel-3" aria-labelledby="tab-3" aria-selected="false" aria-expanded="false" role="tab">
+						<a id="tab-3" class="ui-tabs-anchor" href="#tab-panel-3"><?php echo $tab_3_label; ?></a>
+					</li>
+				<?php } ?>
+			</ul>
+			<div id="tab-panel-1" class="ui-tabs-scroll" role="tabpanel" aria-hidden="false">
+				<fieldset>
+					<legend class='screen-reader-text'>
+						<?php echo $tab_1_label; ?>
+					</legend>
+					<?php echo $tab_1; ?>
+				</fieldset>
+			</div>
+			<div id="tab-panel-2" class="ui-tabs-scroll ui-tabs-hidden" role="tabpanel" aria-hidden="true">
+				<fieldset>
+					<legend class='screen-reader-text'>
+						<?php echo $tab_2_label; ?>
+					</legend>
 					<form method="post" action="admin-post.php">
 						<input type="hidden" name="action" value="azrcrv_f_save_options" />
-						<input name="page_options" type="hidden" value="width,border" />
-						<table class="form-table">
-						
-							<tr><th scope="row"><?php esc_html_e('Default width?', 'flags'); ?></th><td>
-								<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default width', 'flags'); ?></span></legend>
-									<label for="width"><input type="number" name="width" class="small-text" value="<?php echo $options['width']; ?>" />px</label>
-								</fieldset>
-							</td></tr>
-						
-							<tr><th scope="row"><?php esc_html_e('Default border?', 'flags'); ?></th><td>
-								<fieldset><legend class="screen-reader-text"><span><?php esc_html_e('Default border', 'flags'); ?></span></legend>
-									<label for="border"><input type="text" name="border" class="regular-text" value="<?php echo $options['border']; ?>"/></label>
-									<p class="description"><?php esc_html_e('Setting a default border is supported, but not recommended; borders are work better if applied only to those flags with a background matching your site background.', 'flags'); ?></p>
-								</fieldset>
-							</td></tr>
-							
-							<tr><th scope="row"><label for="folder"><?php esc_html_e('Custom Flag Folder', 'flags'); ?></label></th><td>
-								<input name="folder" type="text" id="folder" value="<?php if (strlen($options['folder']) > 0){ echo stripslashes($options['folder']); } ?>" class="large-text" />
-								<p class="description" id="folder-description"><?php esc_html_e('Specify the folder where custom flags will be placed; if the folder does not exist, it will be created with 0755 permissions.', 'flags'); ?></p></td>
-							</td></tr>
-							
-							<tr><th scope="row"><label for="url"><?php esc_html_e('Custom Flag URL', 'flags'); ?></label></th><td>
-								<input name="url" type="text" id="url" value="<?php if (strlen($options['url']) > 0){ echo stripslashes($options['url']); } ?>" class="large-text" />
-								<p class="description" id="url-description"><?php esc_html_e('Specify the URL for the custom flags folder.', 'flags'); ?></p></td>
-							</td></tr>
-							
-						</table>
-		
+						<input name="page_options" type="hidden" value="folder,url" />
+						<?php echo $tab_2; ?>
 						<?php wp_nonce_field('azrcrv-f', 'azrcrv-f-nonce'); ?>
 						<input type="hidden" name="azrcrv_f_data_update" value="yes" />
 						<input type="hidden" name="which_button" value="save_settings" class="short-text" />
 						<input type="submit" value="Save Changes" class="button-primary"/>
 					</form>
-				</p>
+				</fieldset>	
 			</div>
-			
-			<div class="azrcrv_f_tabs <?php if ($showsettings == true){ echo 'invisible'; } ?> tabs-2">
-				<p class="azrcrv_f_horiz">
-				<?php
-					$flags = azrcrv_f_get_flags();
-					
-					foreach ($flags as $flag_id => $flag){
-						
-						if ($flag['type'] == 'standard'){
-							$folder = plugin_dir_url(__FILE__).'assets/images/';
-						}else{
-							$folder = $options['url'];
-						}
-						
-						echo '<div style="width: 350px; display: inline-block;">';
-							echo '<img style="width: 20px;" src="'.esc_attr($folder).esc_attr($flag_id).'.svg'.'" class="azrcrv-f" alt="'.esc_attr($flag['name']).'" /> '.esc_attr($flag_id).' ('.esc_attr($flag['name']).')';
-						echo '</div>';
-					}
-					?>
-				</p>
-			</div>
-			
-			<div class="azrcrv_f_tabs invisible tabs-3">
-				<p class="azrcrv_f_horiz">
-					<form method="post" action="admin-post.php" enctype="multipart/form-data">
-					<input type="hidden" name="action" value="azrcrv_f_save_options" />
-						<table class="form-table">
-						
-							<tr><th scope="row" colspan="2"><?php printf(esc_html__('Upload files must have an extension of %s', 'flags'), '<strong>svg</strong>'); ?></th></tr>
-							
-							<tr><th scope="row"><?php esc_html_e('Select image to upload:', 'flags'); ?></th><td>
-								<input type="file" name="fileToUpload" id="fileToUpload">
-							</td></tr>
-							
-						</table>
-						
-						<input type="hidden" name="which_button" value="upload_image" class="short-text" />
-						<?php wp_nonce_field('azrcrv-f', 'azrcrv-f-nonce'); ?>
-						<input type="hidden" name="azrcrv_f_data_update" value="yes" />
-						<input type="submit" value="Upload Image" class="button-primary">
-						
-					</form>
-				</p>
-			</div>
+			<?php if (isset($saved_options)){ ?>
+				<div id="tab-panel-3" class="ui-tabs-scroll ui-tabs-hidden" role="tabpanel" aria-hidden="true">
+					<fieldset>
+						<legend class='screen-reader-text'>
+							<?php echo $tab_3_label; ?>
+						</legend>
+						<form method='post' action='admin-post.php' enctype='multipart/form-data'>
+							<input type='hidden' name='action' value='azrcrv_f_upload_image' />
+							<?php echo $tab_3; ?>
+							<input type='hidden' name='which_button' value='upload_image' class='short-text' />
+							<?php wp_nonce_field('azrcrv-f-image', 'azrcrv-f-image-nonce'); ?>
+							<input type='hidden' name='azrcrv_f_data_update' value='yes' />
+							<input type='submit' value='Upload Image' class='button-primary'>
+						</form>
+					</fieldset>
+				</div>
+			<?php } ?>
 		</div>
-	</div>
-	
-	<div>
-		<p>
-			<label for="additional-plugins">
-				azurecurve <?php esc_html_e('has the following plugins which allow shortcodes to be used in comments and widgets:', 'flags'); ?>
-			</label>
-			<ul class='azrcrv-plugin-index'>
-				<li>
-					<?php
-					if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-comments/azrcrv-shortcodes-in-comments.php')){
-						echo "<a href='admin.php?page=azrcrv-sic' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
-					}else{
-						echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-comments/' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
-					}
-					?>
-				</li>
-				<li>
-					<?php
-					if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-widgets/azrcrv-shortcodes-in-widgets.php')){
-						echo "<a href='admin.php?page=azrcrv-siw' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
-					}else{
-						echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-widgets/' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
-					}
-					?>
-				</li>
-			</ul>
-		</p>
+		
+		<div>
+			<p>
+				<label for="additional-plugins">
+					azurecurve <?php esc_html_e('has the following plugins which allow shortcodes to be used in comments and widgets:', 'flags'); ?>
+				</label>
+				<ul class='azrcrv-plugin-index'>
+					<li>
+						<?php
+						if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-comments/azrcrv-shortcodes-in-comments.php')){
+							echo "<a href='admin.php?page=azrcrv-sic' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
+						}else{
+							echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-comments/' class='azrcrv-plugin-index'>Shortcodes in Comments</a>";
+						}
+						?>
+					</li>
+					<li>
+						<?php
+						if (azrcrv_f_is_plugin_active('azrcrv-shortcodes-in-widgets/azrcrv-shortcodes-in-widgets.php')){
+							echo "<a href='admin.php?page=azrcrv-siw' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
+						}else{
+							echo "<a href='https://development.azurecurve.co.uk/classicpress-plugins/shortcodes-in-widgets/' class='azrcrv-plugin-index'>Shortcodes in Widgets</a>";
+						}
+						?>
+					</li>
+				</ul>
+			</p>
+		</div>
 	</div>
 
 	<?php
