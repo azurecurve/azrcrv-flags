@@ -7,7 +7,7 @@ Flags allows a scalable SVG flag to be displayed in a post or page using the `[f
 
 The shortcode usage is `[flag id="gb" width="20px" border="1px solid black"]` where the `id` is the country code shown below; width and border are optional paramaters and can be defaulted from the settings. Shortcode usage of `[flag="gb"]` where default parameters are to be used is also supported.
 
-Defintion of flags can be found at [https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2](Wikipedia page ISO 3166-1 alpha-2) (although some additional flags have been included).
+Defintion of flags can be found at [Wikipedia page ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) (although some additional flags have been included).
 
 Custom flags can be added; if a custom flag with the same name as a standard flag exists, the custom flag will be used.
 
