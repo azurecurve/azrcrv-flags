@@ -49,7 +49,7 @@ function display_options() {
 	echo '<div id="' . esc_attr( PLUGIN_HYPHEN ) . '-general" class="wrap">';
 
 		echo '<h1>';
-			echo '<a href="https://development.azurecurve.co.uk/classicpress-plugins/"><img src="' . esc_url_raw( plugins_url( '../assets/images/logo.svg', __FILE__ ) ) . '" style="padding-right: 6px; height: 20px; width: 20px;" alt="azurecurve" /></a>';
+			echo '<a href="' . esc_url_raw( DEVELOPER_URL_RAW ) . esc_attr( PLUGIN_SHORT_SLUG ) . '/"><img src="' . esc_url_raw( plugins_url( '../assets/images/logo.svg', __FILE__ ) ) . '" style="padding-right: 6px; height: 20px; width: 20px;" alt="' . esc_attr( DEVELOPER_NAME ) . '" /></a>';
 			echo esc_html( get_admin_page_title() );
 		echo '</h1>';
 

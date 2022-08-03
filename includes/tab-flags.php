@@ -29,7 +29,7 @@ foreach ( $flags as $flag_id => $flag ) {
 $flag_output  = "<p>$flag_output</p>";
 $flag_output .= '<p>' . sprintf( esc_html__( 'Definition of most flags can be found at %s (although some additional flags have been included).', 'azrcrv-f' ), '<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">Wikipedia page ISO 3166-1 alpha-2</a>' ) . '</p>';
 
-$tab_flags_label = esc_html__( 'Available flags', 'azrcrv-f' );
+$tab_flags_label = esc_html__( 'Available Flags', 'azrcrv-f' );
 $tab_flags       = '
 <table class="form-table azrcrv-settings">
 

@@ -38,10 +38,82 @@ $tab_plugins       = '
 		<td scope="row" colspan=2>
 		
 			<p>' .
-				sprintf( esc_html__( '%1$s was one of the first plugin developers to start developing for ClassicPress; all plugins are available from %2$s and are integrated with the %3$s plugin for fully integrated, no hassle, updates.', 'azrcrv-f' ), '<strong>azurecurve | Development</strong>', '<a href="https://development.azurecurve.co.uk/classicpress-plugins/">azurecurve | Development</a>', '<a href="https://directory.classicpress.net/plugins/update-manager/">Update Manager</a>' )
+				sprintf( esc_html__( '%s was one of the first plugin developers to start developing for ClassicPress; all plugins are available from %s and are integrated with the %s plugin for fully integrated, no hassle, updates.', 'azrcrv-f' ), '<strong>' . DEVELOPER_NAME . '</strong>', DEVELOPER_URL, '<a href="https://directory.classicpress.net/plugins/update-manager/">Update Manager</a>' )
 			. '</p>
+			
+		</td>
+	
+	</tr>
+	
+	<tr>
+	
+		<th scope="row" colspan=2 class="azrcrv-settings-section-heading">
+			
+				<h2 class="' . esc_attr( PLUGIN_HYPHEN ) . '">' . esc_html__( 'Complimentary Plugins', 'azrcrv-f' ) . '</h2>
+			
+		</th>
+
+	</tr>';
+	
+if ( is_plugin_active( 'azrcrv-shortcodes-in-comments/azrcrv-shortcodes-in-comments.php' ) ) {
+	$plugin_sic = '<a href="admin.php?page=azrcrv-sic" class="azrcrv-plugin-index">Shortcodes in Comments</a>';
+} else {
+	$plugin_sic = '<a href="' . esc_url_raw( DEVELOPER_URL_RAW ) . 'shortcodes-in-comments/" class="azrcrv-plugin-index">Shortcodes in Comments</a>';
+}
+if ( is_plugin_active( 'azrcrv-shortcodes-in-widgets/azrcrv-shortcodes-in-widgets.php' ) ) {
+	$plugin_siw = '<a href="admin.php?page=azrcrv-siw" class="azrcrv-plugin-index">Shortcodes in Widgets</a>';
+} else {
+	$plugin_siw = '<a href="' . esc_url_raw( DEVELOPER_URL_RAW ) . 'shortcodes-in-widgets/" class="azrcrv-plugin-index">Shortcodes in Widgets</a>';
+}
+
+	$tab_plugins .= '
+	<tr>
+	
+		<td scope="row" colspan=2>
+		
+			<p>
+				
+				' . sprintf( esc_html__( '%s has the following plugins which allow shortcodes to be used in comments and widgets:', 'azrcrv-f' ), DEVELOPER_URL ) . '</label>
+				
+				<ul class="azrcrv-plugin-index">
+					<li>
+						' .
+
+						$plugin_sic
+
+						. '
+					</li>
+					<li>
+						' .
+
+						$plugin_siw
+
+						. '
+					</li>
+				</ul>
+				
+			</p>
+		
+		</td>
+	
+	</tr>
+	
+	<tr>
+	
+		<th scope="row" colspan=2 class="azrcrv-settings-section-heading">
+			
+				<h2 class="' . esc_attr( PLUGIN_HYPHEN ) . '">' . esc_html__( 'Available Plugins', 'azrcrv-f' ) . '</h2>
+			
+		</th>
+
+	</tr>
+	
+	<tr>
+	
+		<td scope="row" colspan=2>
+		
 			<p>' .
-				sprintf( esc_html__( 'Other plugins available from %s, which you are not using, are:', 'azrcrv-f' ), '<strong>azurecurve | Development</strong>' )
+				sprintf( esc_html__( 'Other plugins available from %s, which you are not using, are:', 'azrcrv-f' ), DEVELOPER_URL )
 			. '</p>
 		
 		</td>

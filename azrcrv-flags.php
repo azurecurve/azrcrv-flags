@@ -25,8 +25,14 @@ namespace azurecurve\Flags;
 /**
  * Define constants.
  */
+const DEVELOPER_SHORTNAME = 'azurecurve';
+const DEVELOPER_NAME      = DEVELOPER_SHORTNAME . ' | Development';
+const DEVELOPER_URL_RAW  = 'https://development.azurecurve.co.uk/classicpress-plugins/';
+const DEVELOPER_URL      = '<a href="' . DEVELOPER_URL_RAW . '">' . DEVELOPER_NAME . '</a>';
+
 const PLUGIN_NAME       = 'Flags';
-const PLUGIN_SLUG       = 'azrcrv-flags';
+const PLUGIN_SHORT_SLUG = 'flags';
+const PLUGIN_SLUG       = 'azrcrv-' . PLUGIN_SHORT_SLUG;
 const PLUGIN_HYPHEN     = 'azrcrv-f';
 const PLUGIN_UNDERSCORE = 'azrcrv_f';
 

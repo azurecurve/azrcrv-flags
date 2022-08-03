@@ -17,32 +17,38 @@
 	</ul>
 	<div id="tab-panel-active" class="azrcrv-ui-tabs-scroll azrcrv-ui-tabs" role="tabpanel" aria-hidden="false">
 			<legend class='screen-reader-text'>
-				<?php // phpcs:ignore. ?>
-				<?php echo $tab_active_label; ?>
+				<?php
+				// phpcs:ignore.
+				echo $tab_active_label;
+				?>
 			</legend>
-			<?php // phpcs:ignore. ?>
-			<?php echo $tab_active; ?>
+			<?php
+			// phpcs:ignore.
+			echo $tab_active;
+			?>
 	</div>
 	<div id="tab-panel-other" class="azrcrv-ui-tabs-scroll azrcrv-ui-tabs-hidden" role="tabpanel" aria-hidden="true">
 			<legend class='screen-reader-text'>
-				<?php // phpcs:ignore. ?>
-				<?php echo $tab_other_label; ?>
+				<?php
+				// phpcs:ignore.
+				echo $tab_other_label;
+				?>
 			</legend>
-			<?php // phpcs:ignore. ?>
-			<?php echo $tab_other; ?>
+			<?php
+			// phpcs:ignore.
+			echo $tab_other;
+			?>
 	</div>
 </div>
 <?php
- < ? php
 /*
 	donate button on settings page
 */
 ?>
 <div class='azrcrv-donate'>
 	<?php
-		esc_html_e( 'Support', 'azrcrv-f' );
+		printf( esc_html__( 'Support %s', 'azrcrv-f' ), esc_html( azurecurve\Flags\DEVELOPER_NAME ) );
 	?>
-	azurecurve | Development
 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 		<input type="hidden" name="cmd" value="_s-xclick">
 		<input type="hidden" name="hosted_button_id" value="MCJQN9SJZYLWJ">
