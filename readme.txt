@@ -1,12 +1,12 @@
 === Flags ===
 
 Description:	Allows a scalable SVG flag to be displayed in a post or page using a shortcode.
-Version:		2.1.1
+Version:		2.1.2
 Tags:			flags, posts, pages
 Author:			azurecurve
 Author URI:		https://development.azurecurve.co.uk/
 Plugin URI:		https://development.azurecurve.co.uk/classicpress-plugins/flags/
-Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v2.1.1/azrcrv-flags.zip
+Download link:	https://github.com/azurecurve/azrcrv-flags/releases/download/v2.1.2/azrcrv-flags.zip
 Donate link:	https://development.azurecurve.co.uk/support-development/
 Requires PHP:	5.6
 Requires:		1.0.0
@@ -57,6 +57,9 @@ This plugin is developed for ClassicPress, but will likely work on WordPress.
 
 # Changelog
 
+### [Version 2.1.2](https://github.com/azurecurve/azrcrv-flags/releases/tag/v2.1.2)
+ * Fix backward compatibility bug with get_flags function.
+ 
 ### [Version 2.1.1](https://github.com/azurecurve/azrcrv-flags/releases/tag/v2.1.1)
  * Fix Update Manager View Details link (contributed by xxsimoxx).
 
